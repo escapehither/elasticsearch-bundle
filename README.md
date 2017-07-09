@@ -1,4 +1,4 @@
-Escape Hither SecurityManagerBundle
+Escape Hither SearchManagerBundle
 ===============================
 
 Step 1: Download the Bundle
@@ -19,7 +19,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```console
-$ composer require escapehither/security-manager-bundle dev-master
+$ composer require escapehither/search-manager-bundle dev-master
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -44,8 +44,7 @@ class AppKernel extends Kernel
         $bundles = array(
             // ...
 
-             new EscapeHither\CrudManagerBundle\StarterKitCrudBundle(),
-             new EscapeHither\SecurityManagerBundle\StarterKitSecurityManagerBundle(),
+             new EscapeHither\SearchManagerBundle\EscapeHitherSearchManagerBundle(),
              new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
              new Knp\Bundle\MenuBundle\KnpMenuBundle(),
              new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
@@ -106,29 +105,22 @@ Step 4: Import and define configuration
 
     ```yaml
     imports:
-       - { resource: "@EscapeHitherSecurityManagerBundle/Resources/config/services.yml" }
-       - { resource: "@EscapeHitherSecurityManagerBundle/Resources/config/config.yml" }
+       - { resource: "@EscapeHitherSearchManagerBundle/Resources/config/services.yml" }
+       - { resource: "@EscapeHitherSearchManagerBundle/Resources/config/config.yml" }
     ```
  If you want a a backend to manage your resource. add in your config file
 
     ```yaml
-    escape_hither_crud_manager:
-        resources:
-            user:
-                controller: EscapeHither\SecurityManagerBundle\Controller
-                entity: AppBundle\Entity\User
-                form: EscapeHither\SecurityManagerBundle\Form\UserType
-                repository: AppBundle\Repository\UserRepository
+   scape_hither_search_manager:
+       indexes:
+           product:
+               entity: OpenMarketPlace\ProductManagerBundle\Entity\Product
+               index_name: product
+               type: product
+               tags:
+                   categories:
+                       include: ['id','code','name']
     ```
-
- Import user routing file in `app/config/routing.yml` :
- Change administration to your secure area.
-    ```yaml
-    escape_hither_manage_user:
-            resource: "@EscapeHitherSecurityManagerBundle/Resources/config/routing/user.yml"
-            prefix:   /administration/user
-    ```
-
 
 2. Import routing files in `app/config/routing.yml`:
 
