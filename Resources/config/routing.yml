@@ -1,0 +1,3 @@
+escape_hither_search_manager_homepage:
+    path:     /search-bundle
+    defaults: { _controller: EscapeHitherSearchManagerBundle:Default:index }

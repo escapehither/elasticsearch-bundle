@@ -1,0 +1,11 @@
+parameters:
+    escape_hither.indexer.class: EscapeHither\SearchManagerBundle\EventListener\IndexerListener
+
+services:
+    escapehither.doctrine_indexer_listener:
+                class: '%escape_hither.indexer.class%'
+                arguments: ["@service_container"]
+                tags:
+                    - { name: doctrine.event_listener, event: postPersist }
+                    - { name: doctrine.event_listener, event: postUpdate }
+                    - { name: doctrine.event_listener, event: preRemove }
