@@ -57,48 +57,7 @@ class AppKernel extends Kernel
     // ...
 }
 ```
-
-Step 3: Create your User class
--------------------------
-Suppose you have a bundle name appBundle
-
-<?php
-namespace AppBundle\Entity;
-use EscapeHither\SecurityManagerBundle\Entity\User as BaseUser;
-
-```php
-class User extends BaseUser {
-    private $id;
-    public function __construct()
-    {
-        parent::__construct();
-        // your own logic
-    }
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-}
-```
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <entity name="AppBundle\Entity\User" table="user_account">
-        <id name="id" type="integer" column="id">
-            <generator strategy="IDENTITY"/>
-        </id>
-    </entity>
-</doctrine-mapping>
-
-```
-
-
-Step 4: Import and define configuration
+Step 3: Import and define configuration
 -------------------------
 
 1. Import config file in `app/config/config.yml` for default filter set configuration:
@@ -106,7 +65,6 @@ Step 4: Import and define configuration
     ```yaml
     imports:
        - { resource: "@EscapeHitherSearchManagerBundle/Resources/config/services.yml" }
-       - { resource: "@EscapeHitherSearchManagerBundle/Resources/config/config.yml" }
     ```
  If you want a a backend to manage your resource. add in your config file
 
@@ -137,10 +95,9 @@ Step 4: Import and define configuration
         user_provider:
             class : AppBundle\Entity\User
     ```
-Step 5:  Update your database schema
+Step 5:  Clear the cache
 -------------------------
 ```console
-$ bin/console doctrine:schema:update --force
 $ bin/console cache:clear -e prod
 $ bin/console cache:clear
 ```
