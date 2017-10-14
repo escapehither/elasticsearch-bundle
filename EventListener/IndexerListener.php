@@ -11,7 +11,6 @@
 namespace EscapeHither\SearchManagerBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use EscapeHither\SearchManagerBundle\Utils\EsIndexer;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
 use Doctrine\ORM\EntityManager;

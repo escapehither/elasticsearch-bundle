@@ -1,5 +1,14 @@
 parameters:
     escape_hither.indexer.class: EscapeHither\SearchManagerBundle\EventListener\IndexerListener
+    escapehither.search_request_parameter_handler.class: EscapeHither\SearchManagerBundle\Services\RequestParameterHandler
+    escapehither.search_request_handler.class: EscapeHither\SearchManagerBundle\Services\SearchRequestHandler
+    #escapehither.crud_single_resource_request_handler.class: EscapeHither\CrudManagerBundle\Services\SingleResourceRequestHandler
+    #escapehither.crud_new_resource_creation_handler.class: EscapeHither\CrudManagerBundle\Services\NewResourceCreationHandler
+    #escapehither.crud_form_factory_handler.class: EscapeHither\CrudManagerBundle\Services\FormFactoryHandler
+    #escapehither.crud_event_dispatcher.class: EscapeHither\CrudManagerBundle\Services\CrudEventDispatcher
+    #escapehither.crud_flash_message_manager.class: EscapeHither\CrudManagerBundle\Services\FlashMessageManager
+    #resource_voter.class: EscapeHither\CrudManagerBundle\Security\ResourceVoter
+    #api_exeption_subscriber.class: EscapeHither\CrudManagerBundle\EventListener\ApiExceptionSubscriber
 
 services:
     escapehither.doctrine_indexer_listener:
@@ -9,3 +18,39 @@ services:
                     - { name: doctrine.event_listener, event: postPersist }
                     - { name: doctrine.event_listener, event: postUpdate }
                     - { name: doctrine.event_listener, event: preRemove }
+    escapehither.search_request_parameter_handler:
+            class: "%escapehither.search_request_parameter_handler.class%"
+            arguments: ["@request_stack","@service_container"]
+    escapehither.search_request_handler:
+            class: "%escapehither.search_request_handler.class%"
+            arguments: ["@escapehither.search_request_parameter_handler","@doctrine.orm.entity_manager"]
+#    escapehither.crud_single_resource_request_handler:
+#                class: "%escapehither.crud_single_resource_request_handler.class%"
+#                arguments: ["@escapehither.crud_request_parameter_handler","@doctrine.orm.entity_manager"]
+#    escapehither.crud_new_resource_creation_handler:
+#                class: "%escapehither.crud_new_resource_creation_handler.class%"
+#                arguments: ["@escapehither.crud_request_parameter_handler","@doctrine.orm.entity_manager"]
+#    escapehither.crud_form_factory_handler:
+#                    class: "%escapehither.crud_form_factory_handler.class%"
+#                    arguments: ["@escapehither.crud_request_parameter_handler","@doctrine.orm.entity_manager","@form.factory"]
+#    escapehither.crud_event_dispatcher:
+#                        class: "%escapehither.crud_event_dispatcher.class%"
+#                        arguments: ["@escapehither.crud_request_parameter_handler","@event_dispatcher"]
+#    escapehither.crud_flash_message_manager:
+#                            class: "%escapehither.crud_flash_message_manager.class%"
+#                            arguments: ["@escapehither.crud_request_parameter_handler"]
+#    escapehither.api_exception_subscriber:
+#            class: "%api_exeption_subscriber.class%"
+#            arguments: ['%kernel.debug%']
+#            tags:
+#                - { name: kernel.event_subscriber }
+#    kernel.listener.escapehither.response_listener:
+#        class: EscapeHither\CrudManagerBundle\Listener\ResponseListener
+#        tags:
+#           - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+#
+#    escapehither.api_routing_loader:
+#                 class: EscapeHither\CrudManagerBundle\Routing\ExtraLoader
+#                 arguments: ["%escape_hither_crud_manager_resources%"]
+#                 tags:
+#                     - { name: routing.loader }

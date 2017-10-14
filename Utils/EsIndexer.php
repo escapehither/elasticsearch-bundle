@@ -35,30 +35,70 @@ class EsIndexer {
      * @param string $name
      *   The index name.
      */
-    public static function createIndex($name) {
+    public static function createIndex($name, $mapping = []) {
         $client = self::ClientBuild();
+        $response = [];
         try {
             // Add exception control.
             if ($client->cluster()->health()) {
                 $params = ['index' => $name];
+                $params['body'] = [
+                    'settings' => [
+                        'analysis' => [
+                            'analyzer' => [
+                                'folding_analyzer' => [
+                                    'tokenizer' => "standard",
+                                    'filter' => ["standard", "asciifolding", "lowercase"]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                if (!empty($mapping['mappings'])) {
+                    $params['body']['mappings'] = $mapping['mappings'];
+                }
+
+
+                // Get settings for one index.
+                // Check if index.
                 $response = $client->indices()->getSettings();
                 if (!in_array($params['index'], $response)) {
                     // Create the index.
-                    $client->indices()->create($params);
-
+                    $response = $client->indices()->create($params);
+                    return $response;
                 }
+
 
             }
 
         } catch (\Exception $e) {
-            //drupal_set_message($e->getMessage(), 'error');
         }
+        return $response;
 
     }
 
-    public static function resetIndex($name) {
+
+    public static function resetIndex(string $name, $mapping = []) {
         $client = self::ClientBuild();
+
         $params['index'] = $name;
+
+        $params['body'] = [
+            'settings' => [
+                'analysis' => [
+                    'analyzer' => [
+                        'folding_analyzer' => [
+                            'tokenizer' => "standard",
+                            'filter' => ["standard", "asciifolding", "lowercase"]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        if (!empty($mapping)) {
+            $params['body']['mappings'] = $mapping;
+        }
+
         try {
 
             if ($client->cluster()->health()) {
@@ -68,8 +108,8 @@ class EsIndexer {
                 $response = $client->indices()->getSettings();
 
                 if (array_key_exists($params['index'], $response)) {
-                     $client->indices()->delete($params);
-                     $client->indices()->create($params);
+                    $client->indices()->delete($params);
+                    $client->indices()->create($params);
                 }
                 else {
                     // Create the index.
@@ -108,26 +148,36 @@ class EsIndexer {
 
         $params['body'] = $fields;
         try {
+
             if ($client->cluster()->health()) {
                 // Get settings for one index.
                 $response = $client->indices()->getSettings();
-
                 // Check if index exist before proceeding.
                 if (isset($response[$index_name])) {
-                     $client->index($params);
+                    if (array_key_exists($type, self::getMappings($index_name)[$index_name]['mappings'])) {
+                        $client->index($params);
+                    }
+                    else {
+                        if(!empty(self::getConfigMapping($type))){
+                            $paramsMapping['index'] = $params['index'];
+                            $paramsMapping['type'] = $params['type'];
+                            $paramsMapping['body'] = self::getConfigMapping($type)['mappings'];
+                            $client->indices()->putMapping($paramsMapping);
+                        }
+                        $client->index($params);
+                    }
                 }
                 else {
-                    // Create the index.
-                    $response = self::createIndex($index_name);
+                    $response = self::createIndex($index_name, self::getConfigMapping($type));
                     if ($response['acknowledged']) {
                         $client->index($params);
+
                     }
                 }
 
             }
 
         } catch (\Exception $e) {
-
         }
 
 
