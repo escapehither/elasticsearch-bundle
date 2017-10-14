@@ -23,11 +23,17 @@ class IndexerListener {
      */
     protected $entityManager;
 
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     */
     public function __construct(Container $container)
     {
         $this->container = $container;
     }
 
+    /**
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args
+     */
     public function postPersist(LifecycleEventArgs $args)
     {
         $object= $args->getEntity();
@@ -38,6 +44,9 @@ class IndexerListener {
 
     }
 
+    /**
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args
+     */
     public function postUpdate(LifecycleEventArgs $args)
     {
         $object= $args->getEntity();
@@ -48,6 +57,9 @@ class IndexerListener {
 
     }
 
+    /**
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args
+     */
     public function preRemove(LifecycleEventArgs $args)
     {
         $object= $args->getEntity();
