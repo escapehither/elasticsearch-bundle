@@ -12,6 +12,7 @@ namespace EscapeHither\SearchManagerBundle\Utils;
 
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Client;
+use Symfony\Component\Yaml\Exception\ParseException;
 class EsIndexer {
     /**
      * @param null $hosts
@@ -31,9 +32,10 @@ class EsIndexer {
     }
 
     /**
-     * Create new index.
-     * @param string $name
-     *   The index name.
+     *  Create a new index with mapping if set
+     * @param $name
+     * @param array $mapping
+     * @return array
      */
     public static function createIndex($name, $mapping = []) {
         $client = self::ClientBuild();
@@ -54,10 +56,9 @@ class EsIndexer {
                         ]
                     ]
                 ];
-                if (!empty($mapping['mappings'])) {
+                if (!empty($mapping['mappings'] && is_array($mapping['mappings']))) {
                     $params['body']['mappings'] = $mapping['mappings'];
                 }
-
 
                 // Get settings for one index.
                 // Check if index.
@@ -126,7 +127,7 @@ class EsIndexer {
 
     /**
      * Index a document.
-     * @param string $index_name
+     * @param string $indexName
      *   The index name.
      * @param string $type
      *   The document type.
@@ -137,10 +138,10 @@ class EsIndexer {
      * @return array
      *   The status.
      */
-    public static function IndexDocument($index_name, $type, $id, $fields) {
+    public static function indexDocument($indexName, $type, $id, $fields) {
 
         $client = self::ClientBuild();
-        $params['index'] = $index_name;
+        $params['index'] = $indexName;
         $params['type'] = $type;
         if ($id != NULL) {
             $params['id'] = $id;
@@ -153,8 +154,8 @@ class EsIndexer {
                 // Get settings for one index.
                 $response = $client->indices()->getSettings();
                 // Check if index exist before proceeding.
-                if (isset($response[$index_name])) {
-                    if (array_key_exists($type, self::getMappings($index_name)[$index_name]['mappings'])) {
+                if (isset($response[$indexName])) {
+                    if (array_key_exists($type, self::getMappings($indexName)[$indexName]['mappings'])) {
                         $client->index($params);
                     }
                     else {
@@ -168,7 +169,7 @@ class EsIndexer {
                     }
                 }
                 else {
-                    $response = self::createIndex($index_name, self::getConfigMapping($type));
+                    $response = self::createIndex($indexName, self::getConfigMapping($type));
                     if ($response['acknowledged']) {
                         $client->index($params);
 
@@ -184,16 +185,16 @@ class EsIndexer {
     }
 
     /**
-     * @param $index_name
+     * @param $indexName
      * @param $type
      * @param $id
      * @return mixed
      */
 
-    public static function GetDocument($index_name, $type, $id) {
+    public static function getDocument($indexName, $type, $id) {
 
         $client = self::ClientBuild();
-        $params['index'] = $index_name;
+        $params['index'] = $indexName;
         $params['type'] = $type;
         $params['id'] = $id;
         $response = [];
@@ -204,7 +205,7 @@ class EsIndexer {
                 $response = $client->indices()->getSettings();
 
                 // Check if index exist before proceeding.
-                if (isset($response[$index_name])) {
+                if (isset($response[$indexName])) {
                     $response = $client->get($params);
 
                 }
@@ -218,16 +219,114 @@ class EsIndexer {
         return $response;
 
     }
+    public static function getMappings($index) {
+        $client = self::ClientBuild();
+        $params = [
+          'index' => $index,
+        ];
+        return $client->indices()->getMapping($params);
+    }
 
     /**
-     * @param $index_name
+     *  This method handle search result.
+     * @param $index
+     * @param $type
+     * @param null $request
+     * @return array
+     */
+    public static function elasticSearchHandler($index, $type, $request = NULL) {
+
+        // Build the elastic search client.
+        $client = self::ClientBuild();
+
+        $text = '*';
+
+        if (isset($request['string'])) {
+
+            if (!is_array($request['string'])) {
+                $text = $request['string'] . '*';
+            }
+            else {
+                if (count($request['string']) > 1) {
+                    $text = implode("* ", $request['string']);
+
+                }
+                else {
+                    $text = implode("* ", $request['string']) . '*';
+
+
+                }
+
+
+            }
+
+        }
+
+        $parameter = [];
+        $parameter['index'] = $index;
+        $parameter['type'] = $type;
+        $parameter['size'] = 5000;
+        // Add sort asc.
+        if (isset($request['sort'])) {
+            $parameter['body']['sort'] = $request['sort'];
+        }
+
+
+        if (!isset($request['filter'])) {
+            // Query run against multiple fields if set.
+            if (!empty($request['fields'])) {
+                $parameter['body']['query']['query_string']['fields'] = $request['fields'];
+
+            }
+        }
+        else {
+            // Query run against multiple fields if set.
+            if (!empty($request['fields'])) {
+                $parameter['body']['query']['filtered']['query']['query_string']['fields'] = $request['fields'];
+
+            }
+            $parameter['body']['query']['filtered']['filter']['bool']['must'][]['terms'] = $request['filter'];
+
+        }
+        if (!empty($request['match'])) {
+            // match request example:
+            $parameter['body']['query']['filtered']['query']['bool']['must'][] = $request['match'];
+        }
+        if (!empty($request['match_phrase'])) {
+            $parameter['body']['query']['match_phrase'] = $request['match_phrase'];
+
+        }
+        if (!empty($request['term'])) {
+            // match with the exact value:
+
+            $parameter['body']['query']['filtered']['query']['bool']['must'][] = $request['term'];
+        }
+        if (!empty($request['exist'])) {
+            //Check for an empty field
+            $parameter['body']['query']['filtered']['query']['bool']['filter'] = $request['exist'];
+        }
+
+        $results = [];
+        try {
+
+            $results = $client->search($parameter);
+        } catch (\Exception $e) {
+            //drupal_set_message($e->getMessage(), 'error');
+        }
+
+        return $results;
+
+    }
+
+    /**
+     * @param $indexName
      * @param $type
      * @param $id
      */
-    public static function DeleteDocument($index_name, $type, $id) {
+    public static function deleteDocument($indexName, $type, $id) {
 
         $client = self::ClientBuild();
-        $params['index'] = $index_name;
+        $params['index'] = $indexName;
         $params['type'] = $type;
         $params['id'] = $id;
         try {
@@ -235,7 +334,7 @@ class EsIndexer {
                 // Get settings for one index.
                 $response = $client->indices()->getSettings();
                 // Check if index exist before proceeding.
-                if (!empty($response[$index_name])) {
+                if (!empty($response[$indexName])) {
                    $client->delete($params);
                 }
 
@@ -244,6 +343,22 @@ class EsIndexer {
         } catch (\Exception $e) {
         }
 
+
+    }
+    protected static function getConfigMapping($type) {
+        $mapping = [];
+        /*try {
+            //$mappings_file = DRUPAL_ROOT . "/" . drupal_get_path('module', 'musnew_indexation') . '/mappings.yml';
+            $mapping_list = Yaml::parse(file_get_contents($mappings_file));
+            if (isset($mapping_list[$type])) {
+                $mapping = $mapping_list[$type];
+
+            }
+        } catch (ParseException $e) {
+            printf("Unable to parse the YAML string: %s", $e->getMessage());
+        }*/
+
+        return $mapping;
 
     }
 

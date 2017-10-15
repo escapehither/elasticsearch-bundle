@@ -79,7 +79,7 @@ class IndexerListener {
         $parameter = $this->container->getParameter($class);
         $documentHandler = new DocumentHandler($object, $parameter);
         $document = $documentHandler->CreateDocument();
-        EsIndexer::IndexDocument($parameter['index_name'],$parameter['type'],$object->getId(),$document);
+        EsIndexer::indexDocument($parameter['index_name'],$parameter['type'],$object->getId(),$document);
     }
 
 
