@@ -8,8 +8,8 @@
  * Date: 28/01/17
  * Time: 17:37
  */
-namespace EscapeHither\CrudManagerBundle\Tests\Services;
-use EscapeHither\CrudManagerBundle\Services\RequestParameterHandler;
+namespace EscapeHither\SearchManagerBundle\Tests\Services;
+use EscapeHither\SearchManagerBundle\Services\RequestParameterHandler;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;

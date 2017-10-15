@@ -8,11 +8,11 @@
  * Date: 01/07/17
  * Time: 23:02
  */
-namespace EscapeHither\CrudManagerBundle\Tests;
-use EscapeHither\CrudManagerBundle\EscapeHitherCrudManagerBundle;
+namespace EscapeHither\SearchManagerBundle\Tests;
+use EscapeHither\SearchManagerBundle\EscapeHitherSearchManagerBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-class EscapeHitherCrudManagerBundleTest extends \PHPUnit_Framework_TestCase{
+class EscapeHitherSearchManagerBundleTest extends \PHPUnit_Framework_TestCase{
     public function testBuild()
     {
         $container = $this->getMockBuilder(ContainerBuilder::class)
@@ -21,7 +21,7 @@ class EscapeHitherCrudManagerBundleTest extends \PHPUnit_Framework_TestCase{
         $container->expects($this->exactly(0))
             ->method('addCompilerPass')
             ->with($this->isInstanceOf(CompilerPassInterface::class));
-        $bundle = new EscapeHitherCrudManagerBundle();
+        $bundle = new EscapeHitherSearchManagerBundle();
         $bundle->build($container);
     }
 }

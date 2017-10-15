@@ -14,8 +14,37 @@ namespace EscapeHither\SearchManagerBundle\Utils;
 class SearchRequest
 {
     protected $request;
-    public function __construct(){
-        $this->request = [];
+
+    public function __construct()
+    {
+
     }
+
+    public function generateRequest()
+    {
+        if (empty($this->request)) {
+            $this->request['body']['query']['filtered']['query']['query_string']['query'] = '*';
+
+            return $this->request;
+        } else {
+            return $this->request;
+        }
+
+    }
+
+    public function addFilter($type, array $fields)
+    {
+
+        foreach ($fields as $fieldName => $value) {
+            $this->request['body']['query']['filtered']['query']['bool']['must'][][][$type] = [$fieldName => $value];
+        }
+    }
+
+    protected function checkTypeFilter($type)
+    {
+
+
+    }
+
 
 }
