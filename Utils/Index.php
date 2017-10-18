@@ -24,12 +24,21 @@ class Index
     /**
      * Index constructor.
      * @param $name
+     *  The index name
      * @param $client
+     *  A small layer add to ElasticSearch Client
      */
     public function __construct($name, EsClient $client)
     {
         $this->name = $name;
         $this->client = $client;
+    }
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
 
@@ -39,7 +48,7 @@ class Index
      * @param array $mapping
      * @return array
      */
-    public function createIndex($name, $mapping = []) {
+    public function create($name, $mapping = []) {
         $response = [];
         try {
             // Add exception control.
@@ -65,7 +74,7 @@ class Index
                 // Check if index.
                 if (!in_array($params['index'], $this->client->getSettings())) {
                     // Create the index.
-                    $response = $this->client->create($params);
+                    $response = $this->client->createIndex($params);
                     return $response;
                 }
 
@@ -77,5 +86,62 @@ class Index
         return $response;
 
     }
+    /**
+     * Index a document.
+     * @param string $indexName
+     *   The index name.
+     * @param string $type
+     *   The document type.
+     * @param int    $id
+     *   The document id.
+     * @param array  $fields
+     *   The documents fields.
+     * @return array
+     *   The status.
+     */
+    /*public function indexDocument($type, $id, $fields) {
+
+
+        $params['index'] = $this->getName();
+        $params['type'] = $type;
+        if ($id != NULL) {
+            $params['id'] = $id;
+        }
+        $params['body'] = $fields;
+        try {
+
+            if ($this->client->getHealth()) {
+                // Get settings for one index.
+                $response = $this->client->getSettings();
+                // Check if index exist before proceeding.
+                if ($this->client->ifIndexExist($this)) {
+                    if (array_key_exists($type, self::getMappings($indexName)[$indexName]['mappings'])) {
+                        $this->client->index($params);
+                    }
+                    else {
+                        if(!empty(self::getConfigMapping($type))){
+                            $paramsMapping['index'] = $params['index'];
+                            $paramsMapping['type'] = $params['type'];
+                            $paramsMapping['body'] = self::getConfigMapping($type)['mappings'];
+                            $client->indices()->putMapping($paramsMapping);
+                        }
+                        $client->index($params);
+                    }
+                }
+                else {
+                    $response = self::createIndex($this->getName(), self::getConfigMapping($type));
+                    if ($response['acknowledged']) {
+                        $client->index($params);
+
+                    }
+                }
+
+            }
+
+        } catch (\Exception $e) {
+        }
+
+
+    }*/
 
 }

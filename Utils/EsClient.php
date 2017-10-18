@@ -12,15 +12,22 @@ namespace EscapeHither\SearchManagerBundle\Utils;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Client;
 
+/**
+ * This Class add a small layer to Elastic Search client.
+ * Class EsClient
+ * @package EscapeHither\SearchManagerBundle\Utils
+ */
 class EsClient
 {
     protected $client;
+    protected $settings;
     /**
      * EsClient constructor.
      */
     public function __construct($hosts = NULL)
     {
         $this->client = self::ClientBuild();
+        $this->settings = $this->getSettings();
     }
 
     /**
@@ -46,10 +53,44 @@ class EsClient
     public function getHealth(){
         return $this->client->cluster()->health();
     }
+
+    /**
+     * @return array
+     */
     public function getSettings(){
         return $this->client->indices()->getSettings();
     }
-    public function create($params){
-        return $this->indices()->create($params);
+
+    /**
+     *  Create a new elastic search index.
+     * @param $params
+     * @return mixed
+     */
+    public function createIndex($params){
+        return $this->client->indices()->create($params);
     }
+
+    /**
+     * Delete an Index.
+     * @param Index $index
+     *  The index to delete.
+     * @return array
+     */
+    public function deleteIndex(Index $index){
+        return $this->client->indices()->delete($index->getName());
+    }
+
+    /**
+     * Check if the index exist
+     * @param Index $index
+     * @return bool
+     */
+     public function ifIndexExist(Index $index){
+         if(isset($this->settings[$index->getName()])){
+             return TRUE;
+         }else{
+             return FALSE;
+         }
+
+     }
 }

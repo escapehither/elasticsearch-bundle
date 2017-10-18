@@ -71,64 +71,7 @@ class EsIndexer {
 
     }
 
-    /**
-     * Index a document.
-     * @param string $indexName
-     *   The index name.
-     * @param string $type
-     *   The document type.
-     * @param int    $id
-     *   The document id.
-     * @param array  $fields
-     *   The documents fields.
-     * @return array
-     *   The status.
-     */
-    public static function indexDocument($indexName, $type, $id, $fields) {
 
-        $client = self::ClientBuild();
-        $params['index'] = $indexName;
-        $params['type'] = $type;
-        if ($id != NULL) {
-            $params['id'] = $id;
-        }
-
-        $params['body'] = $fields;
-        try {
-
-            if ($client->cluster()->health()) {
-                // Get settings for one index.
-                $response = $client->indices()->getSettings();
-                // Check if index exist before proceeding.
-                if (isset($response[$indexName])) {
-                    if (array_key_exists($type, self::getMappings($indexName)[$indexName]['mappings'])) {
-                        $client->index($params);
-                    }
-                    else {
-                        if(!empty(self::getConfigMapping($type))){
-                            $paramsMapping['index'] = $params['index'];
-                            $paramsMapping['type'] = $params['type'];
-                            $paramsMapping['body'] = self::getConfigMapping($type)['mappings'];
-                            $client->indices()->putMapping($paramsMapping);
-                        }
-                        $client->index($params);
-                    }
-                }
-                else {
-                    $response = self::createIndex($indexName, self::getConfigMapping($type));
-                    if ($response['acknowledged']) {
-                        $client->index($params);
-
-                    }
-                }
-
-            }
-
-        } catch (\Exception $e) {
-        }
-
-
-    }
 
     /**
      * @param $indexName
