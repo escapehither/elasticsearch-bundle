@@ -18,69 +18,8 @@ use Elasticsearch\Client;
  * @package EscapeHither\SearchManagerBundle\Utils
  */
 class EsIndexer {
-    /**
-     * @param null $hosts
-     * @return Client
-     */
-    public static function ClientBuild($hosts = NULL) {
-        // If there ist host settings.
-        if (!empty($hosts)) {
-            $client = ClientBuilder::create()->setHosts($hosts)->build();
-        }
-        else {
-            // Use the default settings.
-            $client = ClientBuilder::create()->build();
-        }
-        return $client;
-
-    }
-
-    /**
-     *  Create a new index with mapping if set
-     * @param $name
-     * @param array $mapping
-     * @return array
-     */
-    public static function createIndex($name, $mapping = []) {
-        $client = self::ClientBuild();
-        $response = [];
-        try {
-            // Add exception control.
-            if ($client->cluster()->health()) {
-                $params = ['index' => $name];
-                $params['body'] = [
-                    'settings' => [
-                        'analysis' => [
-                            'analyzer' => [
-                                'folding_analyzer' => [
-                                    'tokenizer' => "standard",
-                                    'filter' => ["standard", "asciifolding", "lowercase"]
-                                ]
-                            ]
-                        ]
-                    ]
-                ];
-                if (!empty($mapping['mappings'] && is_array($mapping['mappings']))) {
-                    $params['body']['mappings'] = $mapping['mappings'];
-                }
-
-                // Get settings for one index.
-                // Check if index.
-                $response = $client->indices()->getSettings();
-                if (!in_array($params['index'], $response)) {
-                    // Create the index.
-                    $response = $client->indices()->create($params);
-                    return $response;
-                }
 
 
-            }
-
-        } catch (\Exception $e) {
-        }
-        return $response;
-
-    }
 
     /**
      * @param string $name

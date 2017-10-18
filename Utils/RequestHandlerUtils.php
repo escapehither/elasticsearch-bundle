@@ -12,10 +12,7 @@ namespace EscapeHither\SearchManagerBundle\Utils;
 
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Class RequestHandlerUtils
- * @package EscapeHither\SearchManagerBundle\Utils
- */
+
 class RequestHandlerUtils
 {
     const ARGUMENTS = 'arguments';
