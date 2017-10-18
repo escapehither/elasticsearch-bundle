@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the Genia package.
+ * This file is part of the Search Manager Bundle package.
  * (c) Georden Gaël LOUZAYADIO
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +12,11 @@ namespace EscapeHither\SearchManagerBundle\Utils;
 
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Client;
-use Symfony\Component\Yaml\Exception\ParseException;
+
+/**
+ * Class EsIndexer
+ * @package EscapeHither\SearchManagerBundle\Utils
+ */
 class EsIndexer {
     /**
      * @param null $hosts
@@ -78,7 +82,10 @@ class EsIndexer {
 
     }
 
-
+    /**
+     * @param string $name
+     * @param array $mapping
+     */
     public static function resetIndex(string $name, $mapping = []) {
         $client = self::ClientBuild();
 
@@ -219,6 +226,11 @@ class EsIndexer {
         return $response;
 
     }
+
+    /**
+     * @param $index
+     * @return array
+     */
     public static function getMappings($index) {
         $client = self::ClientBuild();
         $params = [
@@ -345,6 +357,11 @@ class EsIndexer {
 
 
     }
+
+    /**
+     * @param $type
+     * @return array
+     */
     protected static function getConfigMapping($type) {
         $mapping = [];
         /*try {

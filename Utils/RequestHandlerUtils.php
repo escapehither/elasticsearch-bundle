@@ -12,6 +12,10 @@ namespace EscapeHither\SearchManagerBundle\Utils;
 
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class RequestHandlerUtils
+ * @package EscapeHither\SearchManagerBundle\Utils
+ */
 class RequestHandlerUtils
 {
     const ARGUMENTS = 'arguments';
@@ -95,7 +99,11 @@ class RequestHandlerUtils
         return $name;
     }
 
-
+    /**
+     * @param array $attributes
+     * @param $type
+     * @return null|string
+     */
     public static function getInfoFromAction(array $attributes, $type)
     {
         $actionList = ['index', 'new', 'show', 'edit'];

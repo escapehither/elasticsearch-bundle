@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the Genia package.
+ * This file is part of the saerch-manager bundle package.
  * (c) Georden Gaël LOUZAYADIO
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,15 +10,23 @@
 
 namespace EscapeHither\SearchManagerBundle\Utils;
 
-
+/**
+ * Class SearchRequest
+ * @package EscapeHither\SearchManagerBundle\Utils
+ */
 class SearchRequest
 {
     protected $request;
 
+    /**
+     * SearchRequest constructor.
+     *
+     */
     public function __construct()
     {
 
     }
+
 
     public function generateRequest()
     {
@@ -32,9 +40,9 @@ class SearchRequest
 
     }
 
+
     public function addFilter($type, array $fields)
     {
-
         foreach ($fields as $fieldName => $value) {
             $this->request['body']['query']['filtered']['query']['bool']['must'][][][$type] = [$fieldName => $value];
         }

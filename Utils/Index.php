@@ -5,16 +5,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Date: 18/10/17
- * Time: 22:59
+ * Time: 22:32
  */
 
 namespace EscapeHither\SearchManagerBundle\Utils;
 
 /**
- * Interface SearchReQuestInterface
+ * Class Index
  * @package EscapeHither\SearchManagerBundle\Utils
  */
-interface SearchReQuestInterface
+class Index
 {
 
 }
