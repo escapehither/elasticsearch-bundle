@@ -109,17 +109,7 @@ class EsIndexer {
 
     }
 
-    /**
-     * @param $index
-     * @return array
-     */
-    public static function getMappings($index) {
-        $client = self::ClientBuild();
-        $params = [
-          'index' => $index,
-        ];
-        return $client->indices()->getMapping($params);
-    }
+
 
     /**
      *  This method handle search result.

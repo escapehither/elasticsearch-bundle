@@ -16,11 +16,21 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
+use EscapeHither\SearchManagerBundle\Utils\Document;
 
+/**
+ *  Document Creator.
+ * Class DocumentHandler
+ * @package EscapeHither\SearchManagerBundle\Utils
+ */
 class DocumentHandler {
     private $configuration;
     private $object;
 
+    /**
+     * @param $object
+     * @param $config
+     */
     public function __construct($object,$config) {
     $this->object = $object;
     $this->configuration = $config;
@@ -40,6 +50,9 @@ class DocumentHandler {
         $this->configuration = $configuration;
     }
 
+    /**
+     * @return \Closure
+     */
     public function getTagGenerator() {
         return function (PersistentCollection $persistentCollection) {
             $normalizer = new ObjectNormalizer();
@@ -69,11 +82,9 @@ class DocumentHandler {
     }
 
     /**
-     * @param $object
-     * @param $configuration
      * @return array|object|\Symfony\Component\Serializer\Normalizer\scalar
      */
-    public function CreateDocument() {
+    public function CreateDocumentField() {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $normalizer = new ObjectNormalizer();
         if (!empty($this->configuration['tags'])) {
@@ -91,6 +102,17 @@ class DocumentHandler {
         return $document;
     }
 
+    /**
+     * @return \EscapeHither\SearchManagerBundle\Utils\Document
+     */
+    public function createDocument(){
+        return new  Document($this->configuration['type'],$this->CreateDocumentField());
+    }
+
+    /**
+     * @param $fieldName
+     * @return array
+     */
     private function getTagInclusion($fieldName){
         $exclusion = [];
         $configurationTag = $this->getTagsConfig();
@@ -100,6 +122,10 @@ class DocumentHandler {
         return $exclusion;
 
     }
+
+    /**
+     * @return array
+     */
     private function getTagsConfig(){
         if(!empty($this->configuration['tags'])){
             return $this->configuration['tags'];

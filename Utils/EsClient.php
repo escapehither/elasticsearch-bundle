@@ -9,6 +9,7 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Utils;
+
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Client;
 
@@ -21,8 +22,9 @@ class EsClient
 {
     protected $client;
     protected $settings;
+
     /**
-     * EsClient constructor.
+     * @param null $hosts
      */
     public function __construct($hosts = NULL)
     {
@@ -34,12 +36,12 @@ class EsClient
      * @param null $hosts
      * @return Client
      */
-    protected static function ClientBuild($hosts = NULL) {
+    protected static function ClientBuild($hosts = NULL)
+    {
         // If there ist host settings.
         if (!empty($hosts)) {
             $client = ClientBuilder::create()->setHosts($hosts)->build();
-        }
-        else {
+        } else {
             // Use the default settings.
             $client = ClientBuilder::create()->build();
         }
@@ -50,14 +52,16 @@ class EsClient
     /**
      * @return array
      */
-    public function getHealth(){
+    public function getHealth()
+    {
         return $this->client->cluster()->health();
     }
 
     /**
      * @return array
      */
-    public function getSettings(){
+    public function getSettings()
+    {
         return $this->client->indices()->getSettings();
     }
 
@@ -66,7 +70,8 @@ class EsClient
      * @param $params
      * @return mixed
      */
-    public function createIndex($params){
+    public function createIndex($params)
+    {
         return $this->client->indices()->create($params);
     }
 
@@ -76,7 +81,8 @@ class EsClient
      *  The index to delete.
      * @return array
      */
-    public function deleteIndex(Index $index){
+    public function deleteIndex(Index $index)
+    {
         return $this->client->indices()->delete($index->getName());
     }
 
@@ -85,12 +91,49 @@ class EsClient
      * @param Index $index
      * @return bool
      */
-     public function ifIndexExist(Index $index){
-         if(isset($this->settings[$index->getName()])){
-             return TRUE;
-         }else{
-             return FALSE;
-         }
+    public function ifIndexExist(Index $index)
+    {
+        if (isset($this->settings[$index->getName()])) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
 
-     }
+    }
+
+    /**
+     * @param Document $document
+     * @param Index $index
+     */
+    public function putDocumentMapping(Document$document, Index $index)
+    {
+        $paramsMapping['index'] = $index->getName();
+        $paramsMapping['type'] = $document->getType();
+        $paramsMapping['body'] = $document->getMapping();
+        $this->client->indices()->putMapping($paramsMapping);
+    }
+    /**
+     * @param $index
+     * @return array
+     */
+    public function getIndexMappings(Index $index) {
+        $params = [
+            'index' => $index->getName(),
+        ];
+        return $this->client->indices()->getMapping($params)[$index->getName()]['mappings'];
+    }
+
+    /**
+     * @param Document $document
+     * @param Index $index
+     */
+    public function index(Document$document, Index $index){
+        $params['index'] = $index->getName();
+        $params['type'] = $document->getType();
+        if ($document->getId() != NULL) {
+            $params['id'] = $document->getType();
+        }
+        $params['body'] = $document->getField();
+        $this->client->index($params);
+    }
 }

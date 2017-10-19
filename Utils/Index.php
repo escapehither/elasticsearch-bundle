@@ -10,7 +10,6 @@
 
 namespace EscapeHither\SearchManagerBundle\Utils;
 
-
 /**
  * Class Index
  * @package EscapeHither\SearchManagerBundle\Utils
@@ -33,6 +32,7 @@ class Index
         $this->name = $name;
         $this->client = $client;
     }
+
     /**
      * @return mixed
      */
@@ -43,12 +43,12 @@ class Index
 
 
     /**
-     *  Create a new index with mapping if set
-     * @param $name
+     * Create a new index with mapping if set
      * @param array $mapping
-     * @return array
+     * @return array|mixed
      */
-    public function create($name, $mapping = []) {
+    public function create($mapping = [])
+    {
         $response = [];
         try {
             // Add exception control.
@@ -86,52 +86,31 @@ class Index
         return $response;
 
     }
+
     /**
-     * Index a document.
-     * @param string $indexName
-     *   The index name.
-     * @param string $type
-     *   The document type.
-     * @param int    $id
-     *   The document id.
-     * @param array  $fields
-     *   The documents fields.
-     * @return array
-     *   The status.
+     * @param \EscapeHither\SearchManagerBundle\Utils\Document $document
      */
-    /*public function indexDocument($type, $id, $fields) {
+    public function indexDocument(Document $document)
+    {
 
 
-        $params['index'] = $this->getName();
-        $params['type'] = $type;
-        if ($id != NULL) {
-            $params['id'] = $id;
-        }
-        $params['body'] = $fields;
         try {
 
             if ($this->client->getHealth()) {
-                // Get settings for one index.
-                $response = $this->client->getSettings();
                 // Check if index exist before proceeding.
                 if ($this->client->ifIndexExist($this)) {
-                    if (array_key_exists($type, self::getMappings($indexName)[$indexName]['mappings'])) {
-                        $this->client->index($params);
-                    }
-                    else {
-                        if(!empty(self::getConfigMapping($type))){
-                            $paramsMapping['index'] = $params['index'];
-                            $paramsMapping['type'] = $params['type'];
-                            $paramsMapping['body'] = self::getConfigMapping($type)['mappings'];
-                            $client->indices()->putMapping($paramsMapping);
+                    if (array_key_exists($document->getType(), $this->getMapping())) {
+                        $this->client->index($document,$this);
+                    } else {
+                        if (!empty($document->getMapping())) {
+                            $this->client->putDocumentMapping($document,$this);
                         }
-                        $client->index($params);
+                        $this->client->index($document,$this);
                     }
-                }
-                else {
-                    $response = self::createIndex($this->getName(), self::getConfigMapping($type));
+                } else {
+                    $response = $this->create($document->getMapping());
                     if ($response['acknowledged']) {
-                        $client->index($params);
+                        $this->client->index($document,$this);
 
                     }
                 }
@@ -140,8 +119,14 @@ class Index
 
         } catch (\Exception $e) {
         }
+    }
 
+    /**
+     * @return array
+     */
+    public function getMapping(){
+        return $this->client->getIndexMappings($this);
+    }
 
-    }*/
 
 }
