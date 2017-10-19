@@ -11,7 +11,7 @@
 namespace EscapeHither\SearchManagerBundle\Tests\Utils;
 
 
-class dataTest {
+class DataTest {
     private $age;
     private $name;
     private $sportsman;
