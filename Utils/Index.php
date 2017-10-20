@@ -53,29 +53,15 @@ class Index
         try {
             // Add exception control.
             if ($this->client->getHealth()) {
-                $params = ['index' => $this->name];
-                $params['body'] = [
-                    'settings' => [
-                        'analysis' => [
-                            'analyzer' => [
-                                'folding_analyzer' => [
-                                    'tokenizer' => "standard",
-                                    'filter' => ["standard", "asciifolding", "lowercase"]
-                                ]
-                            ]
-                        ]
-                    ]
-                ];
-                if (!empty($mapping['mappings'] && is_array($mapping['mappings']))) {
-                    $params['body']['mappings'] = $mapping['mappings'];
-                }
 
                 // Get settings for one index.
                 // Check if index.
-                if (!in_array($params['index'], $this->client->getSettings())) {
+                if (!in_array($this->name, $this->client->getSettings())) {
                     // Create the index.
-                    $response = $this->client->createIndex($params);
-                    return $response;
+                    return $this->client->createIndex(
+                      $this->getDefaultParameters($mapping)
+                    );
+
                 }
 
 
@@ -83,6 +69,7 @@ class Index
 
         } catch (\Exception $e) {
         }
+
         return $response;
 
     }
@@ -93,24 +80,26 @@ class Index
     public function indexDocument(Document $document)
     {
 
-
         try {
 
             if ($this->client->getHealth()) {
                 // Check if index exist before proceeding.
                 if ($this->client->ifIndexExist($this)) {
-                    if (array_key_exists($document->getType(), $this->getMapping())) {
-                        $this->client->index($document,$this);
+                    if (array_key_exists(
+                      $document->getType(),
+                      $this->getMapping()
+                    )) {
+                        $this->client->index($document, $this);
                     } else {
                         if (!empty($document->getMapping())) {
-                            $this->client->putDocumentMapping($document,$this);
+                            $this->client->putDocumentMapping($document, $this);
                         }
-                        $this->client->index($document,$this);
+                        $this->client->index($document, $this);
                     }
                 } else {
                     $response = $this->create($document->getMapping());
                     if ($response['acknowledged']) {
-                        $this->client->index($document,$this);
+                        $this->client->index($document, $this);
 
                     }
                 }
@@ -122,10 +111,38 @@ class Index
     }
 
     /**
+     *  Get Index current mapping
      * @return array
      */
-    public function getMapping(){
+    public function getMapping()
+    {
         return $this->client->getIndexMappings($this);
+    }
+
+    /**
+     * @param $mapping
+     * @return array
+     */
+    public function getDefaultParameters($mapping)
+    {
+        $params = ['index' => $this->name];
+        $params['body'] = [
+          'settings' => [
+            'analysis' => [
+              'analyzer' => [
+                'folding_analyzer' => [
+                  'tokenizer' => "standard",
+                  'filter' => ["standard", "asciifolding", "lowercase"],
+                ],
+              ],
+            ],
+          ],
+        ];
+        if (!empty($mapping['mappings'] && is_array($mapping['mappings']))) {
+            $params['body']['mappings'] = $mapping['mappings'];
+        }
+
+        return $params;
     }
 
 

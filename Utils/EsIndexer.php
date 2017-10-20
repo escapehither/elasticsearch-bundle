@@ -18,14 +18,13 @@ use Elasticsearch\Client;
  * @package EscapeHither\SearchManagerBundle\Utils
  */
 class EsIndexer {
-
-
+    
 
     /**
      * @param string $name
      * @param array $mapping
      */
-    public static function resetIndex(string $name, $mapping = []) {
+    public static function resetIndex($name, $mapping = []) {
         $client = self::ClientBuild();
 
         $params['index'] = $name;
