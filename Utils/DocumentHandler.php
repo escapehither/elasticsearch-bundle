@@ -106,6 +106,7 @@ class DocumentHandler {
      * @return \EscapeHither\SearchManagerBundle\Utils\Document
      */
     public function createDocument(){
+
         return new  Document($this->configuration['type'],$this->CreateDocumentFields());
     }
 

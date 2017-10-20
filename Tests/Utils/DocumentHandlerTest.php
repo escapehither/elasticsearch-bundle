@@ -16,7 +16,6 @@ class DocumentHandlerTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateDocument()
     {
-
         $data = new DataTest();
         $data->setName('alain');
         $data->setAge(4);
