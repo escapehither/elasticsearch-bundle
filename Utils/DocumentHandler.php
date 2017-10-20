@@ -84,7 +84,7 @@ class DocumentHandler {
     /**
      * @return array|object|\Symfony\Component\Serializer\Normalizer\scalar
      */
-    public function CreateDocumentField() {
+    public function CreateDocumentFields() {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $normalizer = new ObjectNormalizer();
         if (!empty($this->configuration['tags'])) {
@@ -98,15 +98,15 @@ class DocumentHandler {
         });
         $normalizers = array($normalizer);
         $serializer = new Serializer($normalizers, $encoders);
-        $document = $serializer->normalize($this->object);
-        return $document;
+        $documentFields = $serializer->normalize($this->object);
+        return $documentFields;
     }
 
     /**
      * @return \EscapeHither\SearchManagerBundle\Utils\Document
      */
     public function createDocument(){
-        return new  Document($this->configuration['type'],$this->CreateDocumentField());
+        return new  Document($this->configuration['type'],$this->CreateDocumentFields());
     }
 
     /**
