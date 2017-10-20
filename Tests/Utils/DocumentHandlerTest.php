@@ -10,9 +10,8 @@
 
 namespace EscapeHither\SearchManagerBundle\Tests\Utils;
 
-use EscapeHither\SearchManagerBundle\Tests\Utils\dataTest;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
-//use EscapeHither\SearchManagerBundle\Tests\Utils\DataTest;
+
 class DocumentHandlerTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateDocument()
