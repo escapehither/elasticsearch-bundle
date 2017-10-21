@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the Genia package.
+ * This file is part of the search bundle manager package.
  * (c) Georden Gaël LOUZAYADIO
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,15 +13,19 @@ namespace EscapeHither\SearchManagerBundle\EventListener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use EscapeHither\SearchManagerBundle\Utils\EsIndexer;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
-use Doctrine\ORM\EntityManager;
+use EscapeHither\SearchManagerBundle\Utils\Index;
+use EscapeHither\SearchManagerBundle\Utils\EsClient;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+
+/**
+ * Index delete and update Es Document.
+ * Class IndexerListener
+ * @package EscapeHither\SearchManagerBundle\EventListener
+ */
 class IndexerListener {
     private $container;
-    /**
-     *
-     * @var EntityManager
-     */
-    protected $entityManager;
+    const INDEX_NAME = 'index_name';
+
 
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
@@ -66,7 +70,7 @@ class IndexerListener {
         $class = get_class($object);
         if($this->container->hasParameter($class)){
         $parameter = $this->container->getParameter($class);
-        EsIndexer::DeleteDocument($parameter['index_name'],$parameter['type'],$object->getId());
+        EsIndexer::DeleteDocument($parameter[self::INDEX_NAME],$parameter['type'],$object->getId());
         }
 
     }
@@ -79,7 +83,16 @@ class IndexerListener {
         $parameter = $this->container->getParameter($class);
         $documentHandler = new DocumentHandler($object, $parameter);
         $document = $documentHandler->CreateDocument();
-        EsIndexer::indexDocument($parameter['index_name'],$parameter['type'],$object->getId(),$document);
+        $document->setId($object->getId());
+        $this->getIndex($parameter[self::INDEX_NAME])->indexDocument($document);
+    }
+
+    /**
+     * @param $indexName
+     * @return Index
+     */
+    protected function getIndex($indexName){
+        return $index = new Index($indexName,new EsClient());
     }
 
 

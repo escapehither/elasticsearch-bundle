@@ -73,41 +73,7 @@ class EsIndexer {
 
 
 
-    /**
-     * @param $indexName
-     * @param $type
-     * @param $id
-     * @return mixed
-     */
 
-    public static function getDocument($indexName, $type, $id) {
-
-        $client = self::ClientBuild();
-        $params['index'] = $indexName;
-        $params['type'] = $type;
-        $params['id'] = $id;
-        $response = [];
-        try {
-
-            if ($client->cluster()->health()) {
-                // Get settings for one index.
-                $response = $client->indices()->getSettings();
-
-                // Check if index exist before proceeding.
-                if (isset($response[$indexName])) {
-                    $response = $client->get($params);
-
-                }
-
-            }
-
-
-        } catch (\Exception $e) {
-
-        }
-        return $response;
-
-    }
 
 
 
@@ -202,33 +168,6 @@ class EsIndexer {
 
     }
 
-    /**
-     * @param $indexName
-     * @param $type
-     * @param $id
-     */
-    public static function deleteDocument($indexName, $type, $id) {
-
-        $client = self::ClientBuild();
-        $params['index'] = $indexName;
-        $params['type'] = $type;
-        $params['id'] = $id;
-        try {
-            if ($client->cluster()->health()) {
-                // Get settings for one index.
-                $response = $client->indices()->getSettings();
-                // Check if index exist before proceeding.
-                if (!empty($response[$indexName])) {
-                   $client->delete($params);
-                }
-
-            }
-
-        } catch (\Exception $e) {
-        }
-
-
-    }
 
     /**
      * @param $type

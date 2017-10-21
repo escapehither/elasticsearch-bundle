@@ -16,7 +16,6 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
-use EscapeHither\SearchManagerBundle\Utils\Document;
 
 /**
  *  Document Creator.
@@ -94,6 +93,7 @@ class DocumentHandler {
             }
         }
         $normalizer->setCircularReferenceHandler(function ($object) {
+            //TODO
             return $object->getName();
         });
         $normalizers = array($normalizer);
