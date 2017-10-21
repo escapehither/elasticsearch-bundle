@@ -8,12 +8,11 @@
  * Time: 19:50
  */
 
-namespace EscapeHither\SearchManagerBundle\Utils;
+namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
- *
  * Class Document
- * @package EscapeHither\SearchManagerBundle\Utils
+ * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class Document
 {

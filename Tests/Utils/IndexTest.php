@@ -9,8 +9,8 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Tests\Utils;
-use EscapeHither\SearchManagerBundle\Utils\Index;
-use EscapeHither\SearchManagerBundle\Utils\EsClient;
+use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
+use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 
 class IndexTest extends \PHPUnit_Framework_TestCase
 {

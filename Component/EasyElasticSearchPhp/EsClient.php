@@ -8,15 +8,14 @@
  * Time: 23:30
  */
 
-namespace EscapeHither\SearchManagerBundle\Utils;
+namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Client;
 
 /**
- * This Class add a small layer to Elastic Search client.
  * Class EsClient
- * @package EscapeHither\SearchManagerBundle\Utils
+ * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class EsClient
 {
@@ -60,6 +59,7 @@ class EsClient
         } catch (\Exception $e) {
 
         }
+        return false;
     }
 
     /**
