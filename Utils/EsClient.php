@@ -147,7 +147,7 @@ class EsClient
         $params['index'] = $index->getName();
         $params['type'] = $document->getType();
         if ($document->getId() != null) {
-            $params['id'] = $document->getType();
+            $params['id'] = $document->getId();
         }
         $params['body'] = $document->getField();
 

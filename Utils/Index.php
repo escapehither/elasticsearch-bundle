@@ -140,7 +140,7 @@ class Index
      * @param $type
      * @return array
      */
-    public function getDocument($id, $type)
+    public function getDocument($type,$id)
     {
 
         $params['index'] = $this->name;
