@@ -193,7 +193,7 @@ class Index
                 ],
             ],
         ];
-        if (!empty($mapping['mappings'] && is_array($mapping['mappings']))) {
+        if (!empty($mapping['mappings']) && is_array($mapping['mappings'])) {
             $params['body']['mappings'] = $mapping['mappings'];
         }
 

@@ -26,7 +26,7 @@ class EsClient
     /**
      * @param null $hosts
      */
-    public function __construct($hosts = NULL)
+    public function __construct($hosts = null)
     {
         $this->client = self::ClientBuild();
         $this->settings = $this->getSettings();
@@ -36,7 +36,7 @@ class EsClient
      * @param null $hosts
      * @return Client
      */
-    protected static function ClientBuild($hosts = NULL)
+    protected static function ClientBuild($hosts = null)
     {
         // If there ist host settings.
         if (!empty($hosts)) {
@@ -45,6 +45,7 @@ class EsClient
             // Use the default settings.
             $client = ClientBuilder::create()->build();
         }
+
         return $client;
 
     }
@@ -54,7 +55,11 @@ class EsClient
      */
     public function getHealth()
     {
-        return $this->client->cluster()->health();
+        try {
+            return $this->client->cluster()->health();
+        } catch (\Exception $e) {
+
+        }
     }
 
     /**
@@ -62,7 +67,12 @@ class EsClient
      */
     public function getSettings()
     {
-        return $this->client->indices()->getSettings();
+        if ($this->getHealth()) {
+            return $this->client->indices()->getSettings();
+        }
+
+        return [];
+
     }
 
     /**
@@ -94,9 +104,9 @@ class EsClient
     public function ifIndexExist(Index $index)
     {
         if (isset($this->settings[$index->getName()])) {
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
 
     }
@@ -105,22 +115,26 @@ class EsClient
      * @param Document $document
      * @param Index $index
      */
-    public function putDocumentMapping(Document$document, Index $index)
+    public function putDocumentMapping(Document $document, Index $index)
     {
         $paramsMapping['index'] = $index->getName();
         $paramsMapping['type'] = $document->getType();
         $paramsMapping['body'] = $document->getMapping();
         $this->client->indices()->putMapping($paramsMapping);
     }
+
     /**
      * @param $index
      * @return array
      */
-    public function getIndexMappings(Index $index) {
+    public function getIndexMappings(Index $index)
+    {
         $params = [
-            'index' => $index->getName(),
+          'index' => $index->getName(),
         ];
-        return $this->client->indices()->getMapping($params)[$index->getName()]['mappings'];
+
+        return $this->client->indices()->getMapping($params)[$index->getName(
+        )]['mappings'];
     }
 
     /**
@@ -128,13 +142,15 @@ class EsClient
      * @param Index $index
      * @return array
      */
-    public function index(Document$document, Index $index){
+    public function index(Document $document, Index $index)
+    {
         $params['index'] = $index->getName();
         $params['type'] = $document->getType();
-        if ($document->getId() != NULL) {
+        if ($document->getId() != null) {
             $params['id'] = $document->getType();
         }
         $params['body'] = $document->getField();
+
         return $this->client->index($params);
     }
 
@@ -142,7 +158,8 @@ class EsClient
      * @param $params
      * @return array
      */
-    public function delete($params){
+    public function delete($params)
+    {
         return $this->client->delete($params);
     }
 
@@ -150,7 +167,8 @@ class EsClient
      * @param $params
      * @return array
      */
-    public function get($params){
+    public function get($params)
+    {
         return $this->client->get($params);
     }
 
