@@ -126,6 +126,7 @@ class EsClient
     /**
      * @param Document $document
      * @param Index $index
+     * @return array
      */
     public function index(Document$document, Index $index){
         $params['index'] = $index->getName();
@@ -134,6 +135,23 @@ class EsClient
             $params['id'] = $document->getType();
         }
         $params['body'] = $document->getField();
-        $this->client->index($params);
+        return $this->client->index($params);
     }
+
+    /**
+     * @param $params
+     * @return array
+     */
+    public function delete($params){
+        return $this->client->delete($params);
+    }
+
+    /**
+     * @param $params
+     * @return array
+     */
+    public function get($params){
+        return $this->client->get($params);
+    }
+
 }

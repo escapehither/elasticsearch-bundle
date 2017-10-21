@@ -11,7 +11,6 @@
 namespace EscapeHither\SearchManagerBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use EscapeHither\SearchManagerBundle\Utils\EsIndexer;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
 use EscapeHither\SearchManagerBundle\Utils\Index;
 use EscapeHither\SearchManagerBundle\Utils\EsClient;
@@ -22,7 +21,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface as Container;
  * Class IndexerListener
  * @package EscapeHither\SearchManagerBundle\EventListener
  */
-class IndexerListener {
+class IndexerListener
+{
     private $container;
     const INDEX_NAME = 'index_name';
 
@@ -40,9 +40,9 @@ class IndexerListener {
      */
     public function postPersist(LifecycleEventArgs $args)
     {
-        $object= $args->getEntity();
+        $object = $args->getEntity();
         $class = get_class($object);
-        if($this->container->hasParameter($class)){
+        if ($this->container->hasParameter($class)) {
             $this->indexDocument($class, $object);
         }
 
@@ -53,9 +53,9 @@ class IndexerListener {
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
-        $object= $args->getEntity();
+        $object = $args->getEntity();
         $class = get_class($object);
-        if($this->container->hasParameter($class)){
+        if ($this->container->hasParameter($class)) {
             $this->indexDocument($class, $object);
         }
 
@@ -66,11 +66,11 @@ class IndexerListener {
      */
     public function preRemove(LifecycleEventArgs $args)
     {
-        $object= $args->getEntity();
+        $object = $args->getEntity();
         $class = get_class($object);
-        if($this->container->hasParameter($class)){
-        $parameter = $this->container->getParameter($class);
-        EsIndexer::DeleteDocument($parameter[self::INDEX_NAME],$parameter['type'],$object->getId());
+        if ($this->container->hasParameter($class)) {
+            $parameter = $this->container->getParameter($class);
+            $this->getIndex($parameter[self::INDEX_NAME])->deleteDocument($parameter['type'], $object->getId());
         }
 
     }
@@ -79,7 +79,8 @@ class IndexerListener {
      * @param $class
      * @param $object
      */
-    protected function indexDocument($class, $object) {
+    protected function indexDocument($class, $object)
+    {
         $parameter = $this->container->getParameter($class);
         $documentHandler = new DocumentHandler($object, $parameter);
         $document = $documentHandler->CreateDocument();
@@ -91,8 +92,9 @@ class IndexerListener {
      * @param $indexName
      * @return Index
      */
-    protected function getIndex($indexName){
-        return $index = new Index($indexName,new EsClient());
+    protected function getIndex($indexName)
+    {
+        return $index = new Index($indexName, new EsClient());
     }
 
 
