@@ -68,6 +68,7 @@ class Index
             }
 
         } catch (\Exception $e) {
+            error_log($e, 0);
         }
 
         return $response;
@@ -108,6 +109,7 @@ class Index
             }
 
         } catch (\Exception $e) {
+            error_log($e, 0);
         }
     }
 
@@ -130,6 +132,7 @@ class Index
             }
 
         } catch (\Exception $e) {
+            error_log($e, 0);
         }
 
 
@@ -159,7 +162,7 @@ class Index
 
 
         } catch (\Exception $e) {
-
+            error_log($e, 0);
         }
         return $response;
 
