@@ -68,6 +68,7 @@ class Index
             }
 
         } catch (\Exception $e) {
+            //TODO HANDLE ERROR LOG
             error_log($e, 0);
         }
 
@@ -94,21 +95,25 @@ class Index
                         $this->client->index($document, $this);
                     } else {
                         if (!empty($document->getMapping())) {
+
                             $this->client->putDocumentMapping($document, $this);
                         }
                         $this->client->index($document, $this);
                     }
                 } else {
                     $response = $this->create($document->getMapping());
-                    if ($response['acknowledged']) {
+                    if (isset($response['acknowledged'])) {
                         $this->client->index($document, $this);
 
+                    }else{
+                        //TODO WHAT IF NOTHING HAPPEN.
                     }
                 }
 
             }
 
         } catch (\Exception $e) {
+            //TODO HANDLE ERROR LOG
             error_log($e, 0);
         }
     }
@@ -196,8 +201,8 @@ class Index
                 ],
             ],
         ];
-        if (!empty($mapping['mappings']) && is_array($mapping['mappings'])) {
-            $params['body']['mappings'] = $mapping['mappings'];
+        if (!empty($mapping) && is_array($mapping)) {
+            $params['body']['mappings'] = $mapping;
         }
 
         return $params;

@@ -15,6 +15,9 @@ use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
+use Symfony\Component\Yaml\Yaml;
+
 
 /**
  * Index delete and update Es Document.
@@ -56,6 +59,7 @@ class IndexerListener
         $object = $args->getEntity();
         $class = get_class($object);
         if ($this->container->hasParameter($class)) {
+
             $this->indexDocument($class, $object);
         }
 
@@ -84,6 +88,16 @@ class IndexerListener
         $parameter = $this->container->getParameter($class);
         $documentHandler = new DocumentHandler($object, $parameter);
         $document = $documentHandler->CreateDocument();
+
+        $fieldMappings = $this->getEntityMetadataFieldMappings($class);
+        $mapping[$document->getType()] = [];
+        foreach ($fieldMappings as $key => $value) {
+            if($value['type']=='string'){
+                $mapping[$document->getType()]['properties'][$value['fieldName']]=$this->getDefaultStringAnalyzer();
+            }
+
+        }
+        $document->setMapping($mapping);
         $document->setId($object->getId());
         $this->getIndex($parameter[self::INDEX_NAME])->indexDocument($document);
     }
@@ -95,6 +109,37 @@ class IndexerListener
     protected function getIndex($indexName)
     {
         return $index = new Index($indexName, new EsClient());
+    }
+
+
+    /**
+     * @param $entity
+     * @return array
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
+    protected function getEntityMetadataFieldMappings($entity)
+    {
+        $factory = new DisconnectedMetadataFactory($this->container->get('doctrine'));
+        $metadataClass = $factory->getClassMetadata($entity)->getMetadata()[0];
+        return $metadataClass->fieldMappings;
+    }
+
+    protected function getDefaultStringAnalyzer()
+    {
+        return $default = [
+            'type' => 'string',
+            'analyzer' => 'standard',
+            'fields'=>[
+            'asciifolding' => [
+                'type' => 'string',
+                'analyzer' => 'folding_analyzer'
+            ],
+            'exact_value' => [
+                'type' => 'string',
+                'index' => 'not_analyzed'
+            ]
+        ]];
+
     }
 
 
