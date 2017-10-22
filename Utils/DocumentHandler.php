@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
+use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document;
 
 /**
  *  Document Creator.
@@ -81,8 +82,9 @@ class DocumentHandler {
     }
 
     /**
-     * @return array|object|\Symfony\Component\Serializer\Normalizer\scalar
+     * @return array
      */
+
     public function CreateDocumentFields() {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $normalizer = new ObjectNormalizer();
@@ -93,7 +95,7 @@ class DocumentHandler {
             }
         }
         $normalizer->setCircularReferenceHandler(function ($object) {
-            //TODO
+            //TODO interface
             return $object->getName();
         });
         $normalizers = array($normalizer);
@@ -103,7 +105,7 @@ class DocumentHandler {
     }
 
     /**
-     * @return \EscapeHither\SearchManagerBundle\Utils\Document
+     * @return \EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document
      */
     public function createDocument(){
 

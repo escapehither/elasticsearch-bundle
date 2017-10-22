@@ -8,11 +8,11 @@
  * Time: 23:05
  */
 
-namespace EscapeHither\SearchManagerBundle\Utils;
+namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Class SearchRequest
- * @package EscapeHither\SearchManagerBundle\Utils
+ * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class SearchRequest
 {

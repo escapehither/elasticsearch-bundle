@@ -12,8 +12,8 @@ namespace EscapeHither\SearchManagerBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
-use EscapeHither\SearchManagerBundle\Utils\Index;
-use EscapeHither\SearchManagerBundle\Utils\EsClient;
+use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
+use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 
 /**

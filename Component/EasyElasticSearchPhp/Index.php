@@ -8,11 +8,11 @@
  * Time: 22:32
  */
 
-namespace EscapeHither\SearchManagerBundle\Utils;
+namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Class Index
- * @package EscapeHither\SearchManagerBundle\Utils
+ * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class Index
 {
@@ -76,7 +76,7 @@ class Index
     }
 
     /**
-     * @param \EscapeHither\SearchManagerBundle\Utils\Document $document
+     * @param \EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document $document
      */
     public function indexDocument(Document $document)
     {
@@ -143,7 +143,7 @@ class Index
      * @param $type
      * @return array
      */
-    public function getDocument($id, $type)
+    public function getDocument($type,$id)
     {
 
         $params['index'] = $this->name;
@@ -196,7 +196,7 @@ class Index
                 ],
             ],
         ];
-        if (!empty($mapping['mappings'] && is_array($mapping['mappings']))) {
+        if (!empty($mapping['mappings']) && is_array($mapping['mappings'])) {
             $params['body']['mappings'] = $mapping['mappings'];
         }
 

@@ -9,7 +9,7 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Tests\Utils;
-use EscapeHither\SearchManagerBundle\Utils\SearchRequest;
+use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\SearchRequest;
 
 class SearchRequestTest extends \PHPUnit_Framework_TestCase
 {
