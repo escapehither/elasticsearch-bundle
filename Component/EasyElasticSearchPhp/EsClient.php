@@ -57,7 +57,7 @@ class EsClient
         try {
             return $this->client->cluster()->health();
         } catch (\Exception $e) {
-            error_log($e, 0);
+            error_log($e->getMessage(), 0);
         }
         return false;
     }

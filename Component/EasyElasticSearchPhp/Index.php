@@ -69,7 +69,7 @@ class Index
 
         } catch (\Exception $e) {
             //TODO HANDLE ERROR LOG
-            error_log($e, 0);
+            error_log($e->getMessage(), 0);
         }
 
         return $response;
@@ -114,7 +114,7 @@ class Index
 
         } catch (\Exception $e) {
             //TODO HANDLE ERROR LOG
-            error_log($e, 0);
+            error_log($e->getMessage(), 0);
         }
     }
 
@@ -137,7 +137,7 @@ class Index
             }
 
         } catch (\Exception $e) {
-            error_log($e, 0);
+            error_log($e->getMessage(), 0);
         }
 
 
@@ -167,7 +167,7 @@ class Index
 
 
         } catch (\Exception $e) {
-            error_log($e, 0);
+            error_log($e->getMessage(), 0);
         }
         return $response;
 
