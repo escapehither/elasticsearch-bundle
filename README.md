@@ -43,12 +43,7 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             // ...
-
              new EscapeHither\SearchManagerBundle\EscapeHitherSearchManagerBundle(),
-             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
-             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
-             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
-             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
         );
 
         // ...
@@ -58,45 +53,37 @@ class AppKernel extends Kernel
 }
 ```
 
-Step 3: Create your User class
+Step 3: Create your Resource class
 -------------------------
-Suppose you have a bundle name appBundle
+This bundle use The Symfony Serializer Component https://symfony.com/doc/current/components/serializer.html.
+Suppose you have a a resource class. Add Annotation groups.
+Only attributes in the groups index will be normalize.
 
-<?php
-namespace AppBundle\Entity;
-use EscapeHither\SecurityManagerBundle\Entity\User as BaseUser;
+
 
 ```php
-class User extends BaseUser {
-    private $id;
-    public function __construct()
-    {
-        parent::__construct();
-        // your own logic
-    }
+namespace Acme;
+
+use Symfony\Component\Serializer\Annotation\Groups;
+
+class Product
+{
     /**
-     * Get id
-     *
-     * @return integer
+     * @Groups({"index"})
      */
-    public function getId()
+    public $foo;
+
+    /**
+     * @Groups({"index"})
+     */
+    public function getBar() // is* methods are also supported
     {
-        return $this->id;
+        return $this->bar;
     }
+
+    // ...
 }
 ```
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <entity name="AppBundle\Entity\User" table="user_account">
-        <id name="id" type="integer" column="id">
-            <generator strategy="IDENTITY"/>
-        </id>
-    </entity>
-</doctrine-mapping>
-
-```
-
 
 Step 4: Import and define configuration
 -------------------------
@@ -111,10 +98,10 @@ Step 4: Import and define configuration
  If you want a a backend to manage your resource. add in your config file
 
     ```yaml
-   scape_hither_search_manager:
+   escape_hither_search_manager:
        indexes:
            product:
-               entity: OpenMarketPlace\ProductManagerBundle\Entity\Product
+               entity: Acme\Product
                index_name: product
                type: product
                tags:
@@ -137,10 +124,11 @@ Step 4: Import and define configuration
         user_provider:
             class : AppBundle\Entity\User
     ```
-Step 5:  Update your database schema
+Step 5:  Index all
 -------------------------
+Every time you add new field, Index all document. This command will delete and rebuild all defined index under escape_hither_search_manager indexes configuration.
 ```console
-$ bin/console doctrine:schema:update --force
 $ bin/console cache:clear -e prod
 $ bin/console cache:clear
+$ bin/console escapehither:searchmanager:index-all
 ```

@@ -16,7 +16,7 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
-use Symfony\Component\Yaml\Yaml;
+
 
 
 /**
@@ -124,6 +124,9 @@ class IndexerListener
         return $metadataClass->fieldMappings;
     }
 
+    /**
+     * @return array
+     */
     protected function getDefaultStringAnalyzer()
     {
         return $default = [

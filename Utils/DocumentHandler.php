@@ -17,6 +17,10 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+// For annotations
+use Doctrine\Common\Annotations\AnnotationReader;
+use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 
 /**
  *  Document Creator.
@@ -87,7 +91,9 @@ class DocumentHandler {
 
     public function CreateDocumentFields() {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
-        $normalizer = new ObjectNormalizer();
+        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
+        $normalizer = new ObjectNormalizer($classMetadataFactory);
+        dump($normalizer);
         if (!empty($this->configuration['tags'])) {
             foreach ($this->configuration['tags'] as $keyTag => $exclude) {
                 $collectionToTagsCallback = $this->getTagGenerator();
@@ -100,7 +106,9 @@ class DocumentHandler {
         });
         $normalizers = array($normalizer);
         $serializer = new Serializer($normalizers, $encoders);
-        $documentFields = $serializer->normalize($this->object);
+        $documentFields = $serializer->normalize($this->object, NULL, array('groups' => array('index')));
+        dump($documentFields);
+        die();
         return $documentFields;
     }
 
