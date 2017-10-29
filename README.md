@@ -105,20 +105,20 @@ Step 4: Import and define configuration
     ```
 
 3. Configuration reference:
+If you want to index your resource, add in your config file.
 
-    If you want to index your resource, add in your config file.
+    ```yaml
+   escape_hither_search_manager:
+       indexes:
+           product:
+               entity: Acme\Product
+               index_name: product
+               type: product
+               tags:
+                   categories:
+                       include: ['id','code','name']
+    ```
 
-        ```yaml
-       escape_hither_search_manager:
-           indexes:
-               product:
-                   entity: Acme\Product
-                   index_name: product
-                   type: product
-                   tags:
-                       categories:
-                           include: ['id','code','name']
-        ```
 Step 5:  Index all
 -------------------------
 Every time you add new field, Index all document. This command will delete and rebuild all defined index under escape_hither_search_manager indexes configuration.
