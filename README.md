@@ -55,7 +55,7 @@ class AppKernel extends Kernel
 
 Step 3: Create your Resource class
 -------------------------
-This bundle use The Symfony Serializer Component https://symfony.com/doc/current/components/serializer.html.
+This bundle use [The Symfony Serializer Component.](https://symfony.com/doc/current/components/serializer.html)
 Suppose you have a a resource class. Add Annotation groups.
 Only attributes in the groups index will be normalize.
 
