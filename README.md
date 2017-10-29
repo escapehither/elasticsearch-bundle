@@ -56,7 +56,7 @@ class AppKernel extends Kernel
 Step 3: Create your Resource class
 -------------------------
 This bundle use [The Symfony Serializer Component.](https://symfony.com/doc/current/components/serializer.html)
-Suppose you have a a resource class. Add Annotation groups.
+Suppose you have a a resource class, add Annotation groups.
 Only attributes in the groups index will be normalize.
 
 
@@ -95,19 +95,6 @@ Step 4: Import and define configuration
        - { resource: "@EscapeHitherSearchManagerBundle/Resources/config/services.yml" }
        - { resource: "@EscapeHitherSearchManagerBundle/Resources/config/config.yml" }
     ```
- If you want a a backend to manage your resource. add in your config file
-
-    ```yaml
-   escape_hither_search_manager:
-       indexes:
-           product:
-               entity: Acme\Product
-               index_name: product
-               type: product
-               tags:
-                   categories:
-                       include: ['id','code','name']
-    ```
 
 2. Import routing files in `app/config/routing.yml`:
 
@@ -119,11 +106,19 @@ Step 4: Import and define configuration
 
 3. Configuration reference:
 
-    ```yaml
-    escape_hither_security_manager:
-        user_provider:
-            class : AppBundle\Entity\User
-    ```
+    If you want to index your resource, add in your config file.
+
+        ```yaml
+       escape_hither_search_manager:
+           indexes:
+               product:
+                   entity: Acme\Product
+                   index_name: product
+                   type: product
+                   tags:
+                       categories:
+                           include: ['id','code','name']
+        ```
 Step 5:  Index all
 -------------------------
 Every time you add new field, Index all document. This command will delete and rebuild all defined index under escape_hither_search_manager indexes configuration.
