@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\DataUriNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document;
@@ -93,7 +94,7 @@ class DocumentHandler {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
         $normalizer = new ObjectNormalizer($classMetadataFactory);
-        dump($normalizer);
+        //dump($normalizer);
         if (!empty($this->configuration['tags'])) {
             foreach ($this->configuration['tags'] as $keyTag => $exclude) {
                 $collectionToTagsCallback = $this->getTagGenerator();
@@ -104,11 +105,12 @@ class DocumentHandler {
             //TODO interface
             return $object->getName();
         });
-        $normalizers = array($normalizer);
+        $dataUriNormalizer = new DataUriNormalizer();
+        $normalizers = array($normalizer,$dataUriNormalizer);
         $serializer = new Serializer($normalizers, $encoders);
         $documentFields = $serializer->normalize($this->object, NULL, array('groups' => array('index')));
-        dump($documentFields);
-        die();
+        //dump($documentFields);
+        //die();
         return $documentFields;
     }
 
