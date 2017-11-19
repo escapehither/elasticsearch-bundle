@@ -35,7 +35,7 @@ class EsIndexer {
                     'analyzer' => [
                         'folding_analyzer' => [
                             'tokenizer' => "standard",
-                            'filter' => ["standard", "asciifolding", "lowercase"]
+                            'filter' => ["standard", "asciifolding", "lowercase","word_delimiter"]
                         ]
                     ]
                 ]
