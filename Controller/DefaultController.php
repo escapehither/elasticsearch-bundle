@@ -1,7 +1,7 @@
 <?php
 
 namespace EscapeHither\SearchManagerBundle\Controller;
-
+use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
