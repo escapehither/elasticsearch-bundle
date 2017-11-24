@@ -171,5 +171,13 @@ class EsClient
     {
         return $this->client->get($params);
     }
+    /**
+     * @param $params
+     * @return array
+     */
+    public function search($params)
+    {
+        return $this->client->search($params);
+    }
 
 }

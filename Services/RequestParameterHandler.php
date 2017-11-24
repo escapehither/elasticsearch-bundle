@@ -29,14 +29,10 @@ class RequestParameterHandler extends RequestHandlerUtils
     protected $themePath;
     protected $redirectionRoute;
     protected $indexRoute;
-    protected $deleteRoute;
     protected $indexConfig;
     protected $indexClass;
-    protected $factoryConfig;
-    protected $factoryClass;
     protected $formConfig;
     protected $formClass;
-    protected $factoryServiceName;
     protected $format;
     protected $securityConfig;
     protected $routeName;
@@ -90,11 +86,9 @@ class RequestParameterHandler extends RequestHandlerUtils
             $this->bundleName = $attributes['bundle'];
             // The index root.
             $this->indexRoute = $attributes['nameConfig'].'_index';
-            $this->deleteRoute = $this->generateDeleteRoute();
             // Repository configuration.
             $this->indexConfig = $attributes['index'];
             // factory configuration
-            $this->factoryConfig = $attributes['factory'];
             $this->formConfig = $attributes['form'];
             $this->securityConfig = $attributes['security'];
             $this->actionName = $attributes['action'];
@@ -103,7 +97,6 @@ class RequestParameterHandler extends RequestHandlerUtils
         }
 
     }
-
 
 
     /**
@@ -131,12 +124,20 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getDeleteRoute()
+    public function getIndexName()
     {
-        return $this->deleteRoute;
+        return $this->indexConfig['name'];
     }
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->indexConfig['type'];
+    }
+
 
     /**
      * @return mixed
@@ -201,16 +202,6 @@ class RequestParameterHandler extends RequestHandlerUtils
         return $this->name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFactoryServiceName()
-    {
-        $this->factoryServiceName = $this->resourceServiceName.'.factory';
-
-        return $this->factoryServiceName;
-    }
-
 
     public function getRepositoryMethod()
     {
@@ -218,21 +209,6 @@ class RequestParameterHandler extends RequestHandlerUtils
 
     }
 
-    public function getFactoryMethod()
-    {
-        return $this->factoryConfig['method'];
-
-    }
-
-    public function getFactoryArguments()
-    {
-        if (isset($this->factoryConfig['arguments'])) {
-            return $this->factoryConfig['arguments'];
-        } else {
-            return null;
-        }
-
-    }
 
 
 

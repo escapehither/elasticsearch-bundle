@@ -161,7 +161,6 @@ class RequestHandlerUtils
             }
             $attributes['_route'] = $this->request->attributes->get('_route');
             $attributes['index'] = $this->getIndexConfig();
-            $attributes['factory'] = $this->getFactoryConfig();
             $attributes['form'] = $this->getFormConfig();
             $attributes['security'] = $this->getSecurityConfig();
         }
@@ -196,23 +195,6 @@ class RequestHandlerUtils
 
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFactoryConfig()
-    {
-        $factoryConfig = $this->request->attributes->get('factory');
-        if (isset($factoryConfig[self::ARGUMENTS])) {
-            foreach ($factoryConfig[self::ARGUMENTS] as $key => $value) {
-                $factoryConfig[self::ARGUMENTS][$key] = $this->request->attributes->get(
-                    $value
-                );
-            }
-
-        }
-
-        return $factoryConfig;
-    }
 
     /**
      *  Get The form Configuration.
@@ -268,23 +250,6 @@ class RequestHandlerUtils
     public function getRouteParameter()
     {
         return $this->request->attributes->get('_route_params');
-
-    }
-
-    /**
-     *  Get the delete route from the routing parameter.
-     * @return string
-     */
-    public function generateDeleteRoute()
-    {
-
-        $paramDeleteRoute = $this->request->attributes->get('delete_route');
-        if (isset($paramDeleteRoute)) {
-            return $paramDeleteRoute;
-        }
-
-        return false;
-
 
     }
 

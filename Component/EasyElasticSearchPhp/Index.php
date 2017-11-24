@@ -195,7 +195,7 @@ class Index
                     'analyzer' => [
                         'folding_analyzer' => [
                             'tokenizer' => "standard",
-                            'filter' => ["standard", "asciifolding", "lowercase"],
+                            'filter' => ["standard", "asciifolding", "lowercase","word_delimiter"],
                         ],
                     ],
                 ],
@@ -206,6 +206,22 @@ class Index
         }
 
         return $params;
+    }
+    public function search(SearchReQuestInterface $searchRequest){
+        $params['index'] = $this->name;
+        $params['body']= $searchRequest->generateRequest();
+        dump(json_encode($params));
+        $results = [];
+        try {
+
+            $results = $this->client->search($params);
+        } catch (\Exception $e) {
+            dump($e->getMessage());
+            error_log($e->getMessage(), 0);
+        }
+
+        return $results;
+
     }
 
 

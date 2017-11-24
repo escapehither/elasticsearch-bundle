@@ -16,5 +16,5 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
  */
 interface SearchReQuestInterface
 {
-
+    public function generateRequest();
 }

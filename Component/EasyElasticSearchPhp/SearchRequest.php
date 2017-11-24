@@ -14,7 +14,7 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
  * Class SearchRequest
  * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
-class SearchRequest
+class SearchRequest implements SearchReQuestInterface
 {
     protected $request;
 
@@ -27,12 +27,13 @@ class SearchRequest
 
     }
 
-
+    /**
+     * @return mixed
+     */
     public function generateRequest()
     {
         if (empty($this->request)) {
-            $this->request['body']['query']['filtered']['query']['query_string']['query'] = '*';
-
+             $this->request['body']['query']['filtered']['query']['query_string']['query'] = '*';
             return $this->request;
         } else {
             return $this->request;
@@ -46,6 +47,32 @@ class SearchRequest
         foreach ($fields as $fieldName => $value) {
             $this->request['body']['query']['filtered']['query']['bool']['must'][][][$type] = [$fieldName => $value];
         }
+    }
+
+    /**
+     * Add From parameter.
+     * @param int $value
+     */
+     public function addFrom($value){
+         if (is_int($value)){
+             $this->request['from']= $value;
+         }else{
+             //TODO ADD ERROR EXEPCTION
+         }
+
+     }
+
+    /**
+     * Add size parameter.
+     * @param int $value
+     */
+    public function addSize($value){
+        if (is_int($value)){
+            $this->request['size']= $value;
+        }else{
+
+        }
+
     }
 
     protected function checkTypeFilter($type)
