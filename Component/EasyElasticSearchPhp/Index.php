@@ -9,12 +9,11 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
-
 /**
  * Class Index
  * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
-class Index
+class Index implements IndexInterface
 {
     protected $name;
     protected $type;
@@ -207,16 +206,22 @@ class Index
 
         return $params;
     }
+
+    /**
+     * @param SearchReQuestInterface $searchRequest
+     * @return array
+     */
     public function search(SearchReQuestInterface $searchRequest){
         $params = $searchRequest->generateRequest();
-        $params['index'] = $this->name;
-        dump(json_encode($params));
+        if(!isset($params['index'])){
+            $params['index'] = $this->name;
+        }
         $results = [];
         try {
 
             $results = $this->client->search($params);
         } catch (\Exception $e) {
-            dump($e->getMessage());
+            //dump($e->getMessage());
             error_log($e->getMessage(), 0);
         }
 

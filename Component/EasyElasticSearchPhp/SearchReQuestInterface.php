@@ -16,5 +16,18 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
  */
 interface SearchReQuestInterface
 {
+    /**
+     * @return array
+     */
     public function generateRequest();
+
+    /**
+     * @param int $size
+     */
+    public function setSize($size);
+
+    /**
+     * @param int $from
+     */
+    public function setFrom($from);
 }

@@ -49,47 +49,10 @@ class SearchRequestHandler {
         dump($searchRequest->generateRequest());
 
         $index = new Index($this->requestParameterHandler->getIndexName(),new EsClient());
-        dump($index->search($searchRequest));
+        $results = $index->search($searchRequest);
+        dump($results);
         die();
-        $repository = $this->em->getRepository($this->requestParameterHandler->getRepositoryClass());
-        $repositoryArguments = $this->requestParameterHandler->getRepositoryArguments();
-        $repositoryMethod = $this->requestParameterHandler->getRepositoryMethod();
-        if(NULL != $repositoryMethod){
-            return $this->getResourcesFromMethod($repositoryMethod, $repositoryArguments, $repository);
-        }
 
-        // TODO CLEAN UP  AND CHECK IF THE REQUEST NEED PAGINATION.
-        $qb = $repository->createQueryBuilder('resource');
-        $adapter = new DoctrineORMAdapter($qb);
-        $pagerFanta = new Pagerfanta($adapter);
-        $pagerFanta->setMaxPerPage(5);
-        $page = 1;
-        if(!empty($this->request->query->get('page'))){
-            $page = $this->request->query->get('page');
-        }
-        $pagerFanta->setCurrentPage($page);
-
-        $result = $pagerFanta->getCurrentPageResults();
-        if($format=='html'){
-            return $pagerFanta;
-        }
-        else{
-            $list['data'] = $result->getArrayCopy();
-            $list['pagination'] =[
-              'total'=>$pagerFanta->count(),
-              'count'=>$pagerFanta->getCurrentPageResults()->count(),
-              'current_page'=>$pagerFanta->getCurrentPage(),
-              'per_page'=>$pagerFanta->getMaxPerPage(),
-              'total_pages'=>$pagerFanta->getNbPages(),
-               'links'=>$this->getLinks($pagerFanta),
-
-            ];
-
-            return $list;
-        }
-
-        // TODO Check if the pagination is not needed and if is limited
-        // TODO add criteria and sorting.
 
     }
 
@@ -144,62 +107,49 @@ class SearchRequestHandler {
     {
         $this->_links[$ref] = $url;
     }
-    public function searchAction(Request $request){
+    public function search(){
+
         $page = 1;
-        if(!empty($request->query->get('page'))){
-            $page = $request->query->get('page');
+        if(!empty($this->request->query->get('page'))){
+            $page = $this->request->query->get('page');
         }
-        $index = 'catalogue';
-        $type = 'iso19139';
 
-        $text = '*';
-        if ($request) {
-            $parameter = $request->query->all();
-            if (isset($parameter['search_text'])) {
-                if (empty($parameter['search_text'])) {
-                    $text = '*';
-                }
-                else {
-                    $text = $parameter['search_text'];
-                }
-
-            }
-
-        }
-        $customParameterFilter = [];
-        $customParameterFilter['index'] = $index;
         // Item per page to display.
-        $itemPerPage = 30;
 
-        //$customParameterFilter['from'] = $from;
-        //$customParameterFilter['size'] = $itemPerPage;
-        $customParameterFilter['type'] = $type;
-        $customParameterFilter['body']['query']['filtered']['query']['query_string']['query'] = $text;
+        $format=$this->requestParameterHandler->getFormat();
+        $searchRequest = new SearchRequest();
 
+        if($this->requestParameterHandler->getString()){
+            $searchRequest->setString($this->requestParameterHandler->getString());
+        }
 
-        $adapter = new EasyElasticSearchAdapter($customParameterFilter);
+        $index = new Index($this->requestParameterHandler->getIndexName(),new EsClient());
+        $adapter = new EasyElasticSearchAdapter($searchRequest,$index );
         $pagerFanta = new Pagerfanta($adapter);
-
         $pagerFanta->setCurrentPage($page);
-        $pagerFanta->setMaxPerPage($itemPerPage);
+        $pagerFanta->setMaxPerPage($this->requestParameterHandler->getPaginationSize());
 
-        $result = $pagerFanta->getCurrentPageResults();
-        $list['data'] = $result['hits']['hits'];
-        $list['pagination'] =[
+
+
+        $results = $pagerFanta->getCurrentPageResults();
+        if ($format == 'html') {
+           return  ['data' => $pagerFanta,
+                    'string'=>$this->requestParameterHandler->getString()
+           ];
+
+
+
+        }
+        $data['data'] = $results['hits']['hits'];
+        $data['pagination'] =[
             'total'=>$pagerFanta->count(),
-            'count'=>count($result),
+            'count'=>count($data['data']),
             'current_page'=>$pagerFanta->getCurrentPage(),
             'per_page'=>$pagerFanta->getMaxPerPage(),
             'total_pages'=>$pagerFanta->getNbPages(),
-            'links'=>$this->getLinks($pagerFanta,$request),
+            'links'=>$this->getLinks($pagerFanta,$this->request),];
 
-        ];
-
-        $serializer = $this->getSerializer();
-        $jsonContent = $serializer->serialize($list, 'json');
-        $response = new Response($jsonContent, 200);
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
+        return $data;
 
 
     }

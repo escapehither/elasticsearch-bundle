@@ -28,11 +28,12 @@ class DefaultController extends Controller
         $string = $request->get('search');
         $requestParameterHandler = $this->getRequestParameterHandler();
         $format = $requestParameterHandler->getFormat();
+
         dump($requestParameterHandler);
         die();
         $em = $this->getDoctrine()->getManager();
         $results = $em->getRepository('OpenMarketPlaceProductManagerBundle:Product')->search($string);
-        return $this->render('OpenMarketPlaceSearchManagerBundle:Default:index.html.twig', array(
+        return $this->render($requestParameterHandler->getThemePath(), array(
             'products' => $results,
             'string'   => $string
         ));
@@ -44,10 +45,10 @@ class DefaultController extends Controller
         $format = $requestParameterHandler->getFormat();
         // ADD Check if the user have authorisation before proceeding from the request.
         $searchRequestHandler = $this->get('escapehither.search_request_handler');
-        $resources = $searchRequestHandler->process();
+        $resources = $searchRequestHandler->search();
 
         if ($format == 'html') {
-            return $this->render($requestParameterHandler->getThemePath(), array($requestParameterHandler->getResourceViewName() => $resources,));
+            return $this->render($requestParameterHandler->getThemePath(),$resources );
         }
 
         $serializer = $this->getSerializer();

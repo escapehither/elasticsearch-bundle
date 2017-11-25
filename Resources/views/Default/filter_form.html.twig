@@ -1,0 +1,179 @@
+{#This form has no form type. I could use a form type but there is no data binding with a model#}
+{#and also I don't currently need any validation.#}
+
+{#For a future release I could move it to a form type if there is a good reason for it.#}
+{% if facets is defined and facets is not null %}
+    <form id="filter-form" class="col-sm-3">
+        <div class="section-title hidden-xs">Refine by</div>
+        <div class="section-title refine hidden-sm hidden-md hidden-lg" aria-expanded="true" data-toggle="collapse" data-target="#filter-block">Refine by</div>
+        <div id="filter-block" class="collapse in" aria-expanded="false">
+        {% for name, facet in facets %}
+            {% if loop['index'] == 1 or loop['index'] == 6 or loop['index'] == 10 %}
+                <div class="filter-container">
+                {% if loop['index'] == 1 %}
+                    <div class="filter-container-title"><span>General information</span></div>
+                {% elseif loop['index'] == 6 %}
+                    <div class="filter-container-title"><span>Concert details</span></div>
+                {% else %}
+                    <div class="filter-container-title"><span>Broadcast details</span></div>
+                {% endif %}
+            {% endif %}
+
+            {% if facet is not empty %}
+            <div class="filter clearfix">
+                <div class="filter-item-title collapsed" data-toggle="collapse" data-target="#list{{ loop.index }}">
+                    {{ facetTags[name]['display_name'] }}
+                </div>
+
+                {% if name matches '/taxons/' %}
+                    {% set name = 'taxons'%}
+                {% endif %}
+                {% if name matches '/range-date/' %}
+                    {% set name = 'range-date'%}
+                {% endif %}
+
+                {# set visible for checked filters #}
+                {% set visible = false %}
+                {% for element in facet %}
+                    {% if filters is iterable %}
+                        {% for elem in filters %}
+                            {% if element['key'] in elem  %}
+                                {% set visible = true %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                <div id="list{{ loop.index }}" {% if visible == false %}class="collapse" aria-expanded="false"{% else %}class="collapse in" aria-expanded="true"{% endif %}>
+                <ul>
+                    {% for element in facet %}
+                        {% if 'from' in element|keys %}
+                            <li>
+                                <label class="checkbox-inline">
+                                    <input
+                                        {% if filters is iterable %}
+                                            {% for elem in filters %}
+                                                {% if [element['from'],element['to']]|join('|') in elem  %}
+                                                    {{ 'checked' }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        id="{{ name ~ '-' ~ loop.index0 }}"
+                                        type="checkbox"
+                                        name="filters[][{{ name }}]"
+                                        value="{{ element['min'] is defined? element['min']:element['from'] }}|{{ element['max'] is defined? element['max']:element['to'] }}"
+                                    />
+                                </label>
+                            </li>
+                        {% elseif name == "date" %}{# facet of type date#}
+                            <li>
+                                <label>
+                                    <input
+                                        {% if filters is iterable %}
+                                            {% for elem in filters %}
+                                                {% for key in elem|keys %}
+                                                    {% if key == element['key'] %}
+                                                        value = "{{ elem[key] }}"
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        id="{{ name ~ '-' ~ element['key'] }}"
+                                        type="text"
+                                        name="filters[date][{{ element['key'] }}]"
+                                        class="form-control brocast_date_picker"
+                                    />
+                                </label>
+                            </li>
+                        {% elseif name == "range-date" %}{# facet of type range date#}
+                            <li>
+                                <label>
+                                    <div class="filter-date">
+                                        <span>From</span>
+                                        <input
+                                            {% if filters is iterable %}
+                                                {% for elem in filters %}
+                                                    {% for key in elem|keys %}
+                                                        {% if key == element['key'] %}
+                                                            value = "{{ elem[key]['gte'] }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            id="{{ name ~ '-' ~ element['key']~ '-from' }}"
+                                            type="text"
+                                            name="filters[range-date][{{ element['key'] }}][gte]"
+                                            class="form-control brocast_date_picker pull-right"
+                                        />
+                                    </div>
+                                    <div class="filter-date">
+                                        <span>To</span>
+                                        <input
+                                            {% if filters is iterable %}
+                                                {% for elem in filters %}
+                                                    {% for key in elem|keys %}
+                                                        {% if key == element['key'] %}
+                                                            value = "{{ elem[key]['lte'] }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            id="{{ name ~ '-' ~ element['key']~ '-to' }}"
+                                            type="text"
+                                            name="filters[range-date][{{ element['key'] }}][lte]"
+                                            class="form-control brocast_date_picker pull-right"
+                                        />
+                                    </div>
+                                </label>
+                            </li>
+                        {% else %}
+
+                            {% if element['doc_count'] > 0 %} {# The facet is hide if the doc count is null#}
+                                {% set visible_element = false %}
+                                {% if filters is iterable %}
+                                    {% for elem in filters %}
+                                        {% if element['key'] in elem  %}
+                                            {% set visible_element = true %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                <li {% if loop.index > 4  %}
+                                    {% if visible_element == false %}
+                                        class="hide-filter"
+                                    {% endif %}
+                                        {% endif %}>
+                                    <input
+                                            {% if filters is iterable %}
+                                                {% for elem in filters %}
+                                                    {% if element['key'] in elem  %}
+                                                        {{ 'checked' }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {#{% if name == "taxon" %}#}id="{{ element['key'] }}"{#{% endif %}#} type="checkbox" name="filters[][{{ name }}]" value="{{ element['key'] }}"
+                                            />
+                                    {##}                            <label class="checkbox-inline" for="{{ element['key'] }}">
+                                        {{ (':' in element['label'])? element['label']|split(':')[1]:element['label'] }} <span class="filter-count">({{ element['doc_count'] }})</span>
+                                    </label>
+
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if facet|length > 4 %}
+                        <div class="show-more" data-list="list{{ loop.index }}">+ SHOW MORE</div>
+                    {% endif %}
+                </ul>
+                </div>
+                    </div>
+                {% endif %}
+            {% if loop['index'] ==  5 or loop['index'] == 9 or loop['index'] == 11 %}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <input type="hidden" name="q" value="{{ search_text }}"/>
+        <input type="hidden" name="search_text" value="{{ search_text }}"/>
+            <input type="hidden" name="sort" value="{{ sort }}"/>
+        <input class="filter-button" type="submit" value="FILTER" class="btn btn-info"/>
+        </div>
+    </form>
+{% endif %}

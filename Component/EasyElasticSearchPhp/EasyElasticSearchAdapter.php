@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of the search-manager-bundle package.
+ * (c) Georden Gaël LOUZAYADIO
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ * Date: 19/10/17
+ * Time: 19:50
+ */
 
 
 namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
@@ -14,7 +21,12 @@ class  EasyElasticSearchAdapter implements AdapterInterface
     /**
      * @var
      */
-    private $query;
+    private $request;
+
+    /**
+     * @var
+     */
+    private $index;
 
     /**
      * @var
@@ -26,9 +38,10 @@ class  EasyElasticSearchAdapter implements AdapterInterface
      */
     private $searchable;
 
-    public function __construct(array $query)
+    public function __construct(SearchReQuestInterface $request, Index $index)
     {
-        $this->query = $query;
+        $this->request = $request;
+        $this->index = $index;
     }
 
     /**
@@ -47,7 +60,7 @@ class  EasyElasticSearchAdapter implements AdapterInterface
     }
 
     /**
-     * Returns the Elastica ResultSet. Will return null if getSlice has not yet been
+     * Returns the search ResultSet. Will return null if getSlice has not yet been
      * called.
      *
      * @return
@@ -67,12 +80,11 @@ class  EasyElasticSearchAdapter implements AdapterInterface
      */
     public function getSlice($offset, $length)
     {
-        $this->query['from'] = $offset;
-        $this->query['size'] = $length;
+        $this->request->setFrom($offset);
+        $this->request->setSize($length);
         return $this->resultSet = $this->search();
     }
     protected function search(){
-        $client = Indexer::ClientBuild();
-        return $client->search($this->query);
+        return $this->index->search($this->request);
     }
 }

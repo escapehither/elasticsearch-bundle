@@ -37,6 +37,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     protected $securityConfig;
     protected $routeName;
     protected $actionName;
+    protected $parameters;
+    protected $paginationConfig;
 
     function __construct(RequestStack $requestStack, Container $container)
     {
@@ -88,11 +90,15 @@ class RequestParameterHandler extends RequestHandlerUtils
             $this->indexRoute = $attributes['nameConfig'].'_index';
             // Repository configuration.
             $this->indexConfig = $attributes['index'];
-            // factory configuration
+            if(isset($attributes['pagination'])){
+                $this->paginationConfig = $attributes['pagination'];
+            }
+
             $this->formConfig = $attributes['form'];
             $this->securityConfig = $attributes['security'];
             $this->actionName = $attributes['action'];
             $this->routeName = $attributes['_route'];
+            $this->parameters = $this->getParameters();
 
         }
 
@@ -124,18 +130,28 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getIndexName()
     {
         return $this->indexConfig['name'];
     }
+
     /**
-     * @return mixed
+     * @return string
      */
     public function getType()
     {
         return $this->indexConfig['type'];
+    }
+
+    public function getPaginationSize(){
+        $size = 10;
+        if(isset($this->paginationConfig['size'])){
+            $size =  $this->paginationConfig['size'];
+        }
+        return $size;
+
     }
 
 
@@ -207,6 +223,22 @@ class RequestParameterHandler extends RequestHandlerUtils
     {
         return $this->indexConfig['method'];
 
+    }
+    public function getParameters(){
+        return true;
+        //return $this->request->all();
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getString(){
+        $string = NULL;
+        if($this->request->query->get('string')){
+            $string = $this->request->query->get('string');
+        }
+
+        return $string;
     }
 
 

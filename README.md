@@ -119,7 +119,7 @@ If you want to index your resource, add in your config file.
                        include: ['id','code','name']
     ```
 
-Step 5:  Index all
+4:  Index all
 -------------------------
 Every time you add new field, Index all document. This command will delete and rebuild all defined index under escape_hither_search_manager indexes configuration.
 ```console
@@ -127,3 +127,20 @@ $ bin/console cache:clear -e prod
 $ bin/console cache:clear
 $ bin/console escapehither:searchmanager:index-all
 ```
+
+5. Add a search page:
+If you want create a new search route. in your routing.yml just add you new route like this.
+
+    ```yaml
+   genia_search:
+       path:     /search
+       defaults:
+           _controller: "EscapeHitherSearchManagerBundle:Default:search"
+           template: OpenMarketPlaceSearchManagerBundle:Default:index.html.twig
+           index :
+               name: open-market-place
+               type: product
+           pagination:
+               size: 10
+       methods:  GET
+    ```

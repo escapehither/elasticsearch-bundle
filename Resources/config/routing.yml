@@ -1,9 +1,0 @@
-escape_hither_search_manager_homepage:
-    path:     /search-bundle
-    defaults:
-        _controller: "EscapeHitherSearchManagerBundle:Default:search"
-        template: OpenMarketPlaceSearchManagerBundle:Default:index.html.twig
-        index :
-            name: open-market-place
-            type: product
-    methods:  GET

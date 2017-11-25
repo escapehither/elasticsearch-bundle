@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 class RequestHandlerUtils
 {
     const ARGUMENTS = 'arguments';
+    /**
+     * @var Request
+     */
     protected $request;
 
     /**
