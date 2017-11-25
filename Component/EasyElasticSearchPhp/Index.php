@@ -208,8 +208,8 @@ class Index
         return $params;
     }
     public function search(SearchReQuestInterface $searchRequest){
+        $params = $searchRequest->generateRequest();
         $params['index'] = $this->name;
-        $params['body']= $searchRequest->generateRequest();
         dump(json_encode($params));
         $results = [];
         try {
