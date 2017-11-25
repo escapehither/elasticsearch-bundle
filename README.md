@@ -129,6 +129,7 @@ $ bin/console escapehither:searchmanager:index-all
 ```
 
 5. Add a search page:
+-------------------------
 If you want create a new search route. in your routing.yml just add you new route like this.
 
     ```yaml
