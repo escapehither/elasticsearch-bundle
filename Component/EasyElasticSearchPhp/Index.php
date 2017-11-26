@@ -221,7 +221,7 @@ class Index implements IndexInterface
 
             $results = $this->client->search($params);
         } catch (\Exception $e) {
-            //dump($e->getMessage());
+
             error_log($e->getMessage(), 0);
         }
 

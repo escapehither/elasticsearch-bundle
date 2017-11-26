@@ -94,7 +94,7 @@ class DocumentHandler {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
         $normalizer = new ObjectNormalizer($classMetadataFactory);
-        //dump($normalizer);
+
         if (!empty($this->configuration['tags'])) {
             foreach ($this->configuration['tags'] as $keyTag => $exclude) {
                 $collectionToTagsCallback = $this->getTagGenerator();
@@ -109,8 +109,6 @@ class DocumentHandler {
         $normalizers = array($normalizer,$dataUriNormalizer);
         $serializer = new Serializer($normalizers, $encoders);
         $documentFields = $serializer->normalize($this->object, NULL, array('groups' => array('index')));
-        //dump($documentFields);
-        //die();
         return $documentFields;
     }
 

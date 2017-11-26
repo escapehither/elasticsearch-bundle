@@ -56,15 +56,10 @@ class DefaultController extends Controller
         $response = new Response($jsonContent, 200);
         $response->headers->set('Content-Type', 'application/json');
         return $response;
-
-
-        die('ok');
         return $this->render('EscapeHitherSearchManagerBundle:Default:index.html.twig');
         $string = $request->get('search');
         $requestParameterHandler = $this->getRequestParameterHandler();
         $format = $requestParameterHandler->getFormat();
-        dump($requestParameterHandler);
-        die();
         $em = $this->getDoctrine()->getManager();
         $results = $em->getRepository('OpenMarketPlaceProductManagerBundle:Product')->search($string);
         return $this->render('OpenMarketPlaceSearchManagerBundle:Default:index.html.twig', array(
