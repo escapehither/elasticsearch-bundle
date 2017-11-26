@@ -127,6 +127,7 @@ class SearchRequestHandler {
         $adapter = new EasyElasticSearchAdapter($searchRequest,$index );
         $pagerFanta = new Pagerfanta($adapter);
         $pagerFanta->setCurrentPage($page);
+
         $pagerFanta->setMaxPerPage($this->requestParameterHandler->getPaginationSize());
 
 

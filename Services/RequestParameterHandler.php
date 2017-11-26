@@ -90,6 +90,7 @@ class RequestParameterHandler extends RequestHandlerUtils
             $this->indexRoute = $attributes['nameConfig'].'_index';
             // Repository configuration.
             $this->indexConfig = $attributes['index'];
+            dump($attributes);
             if(isset($attributes['pagination'])){
                 $this->paginationConfig = $attributes['pagination'];
             }
@@ -147,6 +148,7 @@ class RequestParameterHandler extends RequestHandlerUtils
 
     public function getPaginationSize(){
         $size = 10;
+        dump($this->paginationConfig['size']);
         if(isset($this->paginationConfig['size'])){
             $size =  $this->paginationConfig['size'];
         }

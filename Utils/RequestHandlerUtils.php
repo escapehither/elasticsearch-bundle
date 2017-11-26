@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
 class RequestHandlerUtils
 {
     const ARGUMENTS = 'arguments';
+    const _PAGINATION_= 'pagination';
+    const _INDEX_ = 'index';
     /**
      * @var Request
      */
@@ -163,7 +165,8 @@ class RequestHandlerUtils
                 $attributes['action'] = null;
             }
             $attributes['_route'] = $this->request->attributes->get('_route');
-            $attributes['index'] = $this->getIndexConfig();
+            $attributes[self::_INDEX_] = $this->getConfig(self::_INDEX_);
+            $attributes[self::_PAGINATION_] = $this->getConfig(self::_PAGINATION_);
             $attributes['form'] = $this->getFormConfig();
             $attributes['security'] = $this->getSecurityConfig();
         }
@@ -173,27 +176,28 @@ class RequestHandlerUtils
     }
 
     /**
-     * @return mixed
+     * @param string $type
+     * @return Null|array
      */
-    public function getIndexConfig()
+    public function getConfig($type)
     {
-        $indexConfig = $this->request->attributes->get('index');
-        if (isset($indexConfig[self::ARGUMENTS])) {
-            foreach ($indexConfig[self::ARGUMENTS] as $key => $value) {
-                $indexConfig[self::ARGUMENTS][$key] = $this->request->query->get(
+        $config = $this->request->attributes->get($type);
+        if (isset($config[self::ARGUMENTS])) {
+            foreach ($config[self::ARGUMENTS] as $key => $value) {
+                $config[self::ARGUMENTS][$key] = $this->request->query->get(
                     $value
                 );
             }
 
         } else {
-            $indexConfig[self::ARGUMENTS] = null;
+            $config[self::ARGUMENTS] = null;
         }
-        if (!isset($indexConfig['method'])) {
-            $indexConfig['method'] = null;
+        if (!isset($config['method'])) {
+            $config['method'] = null;
 
         }
 
-        return $indexConfig;
+        return $config;
 
 
     }

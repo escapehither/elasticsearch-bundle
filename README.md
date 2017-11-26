@@ -144,4 +144,5 @@ If you want create a new search route. in your routing.yml just add you new rout
            pagination:
                size: 10
        methods:  GET
+
 ```
