@@ -44,14 +44,10 @@ class SearchRequestHandler {
 
     public function process(){
         $format=$this->requestParameterHandler->getFormat();
-        dump($this->requestParameterHandler);
         $searchRequest = new SearchRequest();
-        dump($searchRequest->generateRequest());
-
         $index = new Index($this->requestParameterHandler->getIndexName(),new EsClient());
         $results = $index->search($searchRequest);
-        dump($results);
-        die();
+
 
 
     }
