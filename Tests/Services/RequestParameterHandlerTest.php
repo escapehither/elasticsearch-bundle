@@ -19,7 +19,7 @@ class RequestParameterHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-
+        //TODO
 
     }
     public function testBuild(){
@@ -64,13 +64,13 @@ class RequestParameterHandlerTest extends \PHPUnit_Framework_TestCase
 
     }
     public function testGetResourceClass(){
-
+        //TODO
     }
     public function testGenerateDeleteRoute() {
-
+        //TODO
     }
     public function testGetFormat() {
-
+        //TODO
     }
     /**
      * @return string

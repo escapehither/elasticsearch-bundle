@@ -3,18 +3,8 @@ Escape Hither SearchManagerBundle
 
 Step 1: Download the Bundle
 ---------------------------
-The Bundle is actually in a private Repository.
-In your Composer.json add:
-```json
-{
-  //....
-  "repositories": [{
-    "type": "composer",
-    "url": "https://packages.escapehither.com"
-  }]
 
-}
-```
+
 Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
@@ -119,7 +109,7 @@ If you want to index your resource, add in your config file.
                        include: ['id','code','name']
     ```
 
-4:  Index all
+4:  Index all (Next feature)
 -------------------------
 Every time you add new field, Index all document. This command will delete and rebuild all defined index under escape_hither_search_manager indexes configuration.
 ```console

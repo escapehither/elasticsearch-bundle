@@ -150,35 +150,6 @@ class SearchRequestHandler {
 
 
     }
-//    private function getLinks(Pagerfanta $pagerFanta, Request $request){
-//
-//        $route = $request->attributes->get('_route');
-//        // make sure we read the route parameters from the passed option array
-//        $defaultRouteParams = array_merge($request->query->all(), $request->attributes->get('_route_params', array()));
-//        $createLinkUrl = function($targetPage) use ($route, $defaultRouteParams) {
-//            $router = $this->container->get('router');
-//            return $router->generate($route, array_merge(
-//                $defaultRouteParams,
-//                array('page' => $targetPage)
-//            ));
-//        };
-//
-//        $this->addLink('self', $createLinkUrl($pagerFanta->getCurrentPage()));
-//        $this->addLink('first', $createLinkUrl(1));
-//        $this->addLink('last', $createLinkUrl($pagerFanta->getNbPages()));
-//
-//        if ($pagerFanta->hasNextPage()) {
-//            $this->addLink('next', $createLinkUrl($pagerFanta->getNextPage()));
-//        }
-//        if ($pagerFanta->hasPreviousPage()) {
-//            $this->addLink('prev', $createLinkUrl($pagerFanta->getPreviousPage()));
-//        }
-//        return $this->_links;
-//
-//    }
-//    public function addLink($ref, $url)
-//    {
-//        $this->_links[$ref] = $url;
-//    }
+
 
 }

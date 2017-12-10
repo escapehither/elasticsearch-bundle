@@ -19,9 +19,6 @@ use Symfony\Component\Console\Question\Question;
 
 class IndexAllCommand extends ContainerAwareCommand {
     protected $type;
-    const EMAIL = 'mail';
-    const PASSWORD = 'password';
-    const USERNAME = 'username';
 
     protected function configure() {
         $this
@@ -37,32 +34,7 @@ class IndexAllCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         // outputs multiple lines to the console (adding "\n" at the end of each line)
-        $output->writeln([
-            'User Creator',
-            '============',
-            '',
-        ]);
-        $inputList = [
-            self::USERNAME,
-            self::EMAIL,
-            self::PASSWORD,
-        ];
 
-        $helper = $this->getHelper('question');
-        $data = [];
-        foreach ($inputList as $value) {
-            $this->setType($value);
-            $data[$value] = $this->askInput($input, $output, $helper);
-        }
-        $message = 'repeat your password :';
-        $repeatPassword = $this->askInput($input, $output, $helper, $message);
-        if ($data[self::PASSWORD] != $repeatPassword) {
-            throw new \Exception('The password is not valid');
-        }
-        $this->createUser($data);
-        // outputs a message followed by a "\n"
-        $output->writeln($data[self::PASSWORD]);
-        $output->writeln('The user : ' .$data[self::USERNAME].' successfully created');
 
     }
 
@@ -88,9 +60,7 @@ class IndexAllCommand extends ContainerAwareCommand {
             }
             return $value;
         });
-        if ($this->type == self::PASSWORD) {
-            $question->setHidden(TRUE);
-        }
+
         $question->setMaxAttempts(3);
         return $helper->ask($input, $output, $question);
 
@@ -103,26 +73,6 @@ class IndexAllCommand extends ContainerAwareCommand {
         $this->type = $type;
     }
 
-    protected function createUser($data) {
-        $container = $this->getContainer();
-        $em = $container->get('doctrine.orm.entity_manager');
-        $user_provider_class = $container->getParameter('escape_hither.security.user.class');
-        $repository = $em->getRepository($user_provider_class);
-        $previousByMail = $repository->findOneByEmail($data[self::EMAIL]);
-        $previousByUserName = $repository->findOneByUsername($data[self::USERNAME]);
-        if ($previousByMail || $previousByUserName) {
-            throw new \Exception('The  user already exist');
-        }
-        $user = new $user_provider_class();
-        $user->setUsername($data[self::USERNAME]);
-        $user->setEmail($data[self::EMAIL]);
-        $user->setPlainPassword($data[self::PASSWORD]);
-        if (!empty($roles)) {
-            $user->setRoles($roles);
-        }
-        $em->persist($user);
-        $em->flush();
-    }
 
 
 }
