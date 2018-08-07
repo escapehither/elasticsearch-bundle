@@ -23,33 +23,19 @@ class EsClient
     protected $settings;
 
     /**
+     * Es client constructor.
+     *
      * @param null $hosts
      */
     public function __construct($hosts = null)
     {
-        $this->client = self::ClientBuild();
+        $this->client = self::clientBuild($hosts);
         $this->settings = $this->getSettings();
     }
 
     /**
-     * @param null $hosts
-     * @return Client
-     */
-    protected static function ClientBuild($hosts = null)
-    {
-        // If there ist host settings.
-        if (!empty($hosts)) {
-            $client = ClientBuilder::create()->setHosts($hosts)->build();
-        } else {
-            // Use the default settings.
-            $client = ClientBuilder::create()->build();
-        }
-
-        return $client;
-
-    }
-
-    /**
+     * Get the cluster health.
+     *
      * @return array
      */
     public function getHealth()
@@ -59,10 +45,13 @@ class EsClient
         } catch (\Exception $e) {
             error_log($e->getMessage(), 0);
         }
+
         return false;
     }
 
     /**
+     * Get the settings.
+     *
      * @return array
      */
     public function getSettings()
@@ -72,12 +61,13 @@ class EsClient
         }
 
         return [];
-
     }
 
     /**
-     *  Create a new elastic search index.
-     * @param $params
+     * Create a new elastic search index.
+     *
+     * @param array $params The params.
+     *
      * @return mixed
      */
     public function createIndex($params)
@@ -87,8 +77,8 @@ class EsClient
 
     /**
      * Delete an Index.
-     * @param Index $index
-     *  The index to delete.
+     * @param Index $index The index to delete.
+     *
      * @return array
      */
     public function deleteIndex(Index $index)
@@ -97,8 +87,10 @@ class EsClient
     }
 
     /**
-     * Check if the index exist
-     * @param Index $index
+     * Check if the index exist.
+     *
+     * @param Index $index The index.
+     *
      * @return bool
      */
     public function ifIndexExist(Index $index)
@@ -108,12 +100,13 @@ class EsClient
         } else {
             return false;
         }
-
     }
 
     /**
-     * @param Document $document
-     * @param Index $index
+     * Put Document mapping.
+     *
+     * @param Document $document The documents.
+     * @param Index    $index    The index.
      */
     public function putDocumentMapping(Document $document, Index $index)
     {
@@ -124,7 +117,8 @@ class EsClient
     }
 
     /**
-     * @param $index
+     * @param Index $index
+     *
      * @return array
      */
     public function getIndexMappings(Index $index)
@@ -138,8 +132,11 @@ class EsClient
     }
 
     /**
-     * @param Document $document
-     * @param Index $index
+     * Index a document.
+     *
+     * @param Document $document The document.
+     * @param Index    $index    The index.
+     *
      * @return array
      */
     public function index(Document $document, Index $index)
@@ -155,7 +152,10 @@ class EsClient
     }
 
     /**
-     * @param $params
+     * Delete a document.
+     *
+     * @param array $params The params.
+     *
      * @return array
      */
     public function delete($params)
@@ -164,7 +164,10 @@ class EsClient
     }
 
     /**
-     * @param $params
+     * Get a document
+     *
+     * @param array $params The de params.
+     *
      * @return array
      */
     public function get($params)
@@ -172,7 +175,10 @@ class EsClient
         return $this->client->get($params);
     }
     /**
-     * @param $params
+     * Search a resource.
+     *
+     * @param array $params The params.
+     *
      * @return array
      */
     public function search($params)
@@ -180,4 +186,20 @@ class EsClient
         return $this->client->search($params);
     }
 
+     /**
+     * @param null $hosts
+     * @return Client
+     */
+    protected static function clientBuild($hosts = null)
+    {
+        // If there ist host settings.
+        if (!empty($hosts)) {
+            $client = ClientBuilder::create()->setHosts(['host' => $hosts])->build();
+        } else {
+            // Use the default settings.
+            $client = ClientBuilder::create()->build();
+        }
+
+        return $client;
+    }
 }

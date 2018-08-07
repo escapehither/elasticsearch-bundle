@@ -9,6 +9,7 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
+
 /**
  * Class Index
  * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
@@ -21,10 +22,9 @@ class Index implements IndexInterface
 
     /**
      * Index constructor.
-     * @param $name
-     *  The index name
-     * @param $client
-     *  A small layer add to ElasticSearch Client
+     *
+     * @param string   $name   The index name
+     * @param EsClient $client A small layer add to ElasticSearch Client
      */
     public function __construct($name, EsClient $client)
     {
@@ -52,7 +52,6 @@ class Index implements IndexInterface
         try {
             // Add exception control.
             if ($this->client->getHealth()) {
-
                 // Get settings for one index.
                 // Check if index.
                 if (!in_array($this->name, $this->client->getSettings())) {
@@ -60,19 +59,14 @@ class Index implements IndexInterface
                     return $this->client->createIndex(
                         $this->getDefaultParameters($mapping)
                     );
-
                 }
-
-
             }
-
         } catch (\Exception $e) {
             //TODO HANDLE ERROR LOG
             error_log($e->getMessage(), 0);
         }
 
         return $response;
-
     }
 
     /**
@@ -83,7 +77,6 @@ class Index implements IndexInterface
 
 
         try {
-
             if ($this->client->getHealth()) {
                 // Check if index exist before proceeding.
                 if ($this->client->ifIndexExist($this)) {
@@ -94,7 +87,6 @@ class Index implements IndexInterface
                         $this->client->index($document, $this);
                     } else {
                         if (!empty($document->getMapping())) {
-
                             $this->client->putDocumentMapping($document, $this);
                         }
                         $this->client->index($document, $this);
@@ -103,14 +95,11 @@ class Index implements IndexInterface
                     $response = $this->create($document->getMapping());
                     if (isset($response['acknowledged'])) {
                         $this->client->index($document, $this);
-
-                    }else{
+                    } else {
                         //TODO WHAT IF NOTHING HAPPEN.
                     }
                 }
-
             }
-
         } catch (\Exception $e) {
             //TODO HANDLE ERROR LOG
             error_log($e->getMessage(), 0);
@@ -118,8 +107,8 @@ class Index implements IndexInterface
     }
 
     /**
-     * @param $type
-     * @param $id
+     * @param string $type The document type.
+     * @param mixed  $id   The document id.
      */
     public function deleteDocument($type, $id)
     {
@@ -132,22 +121,21 @@ class Index implements IndexInterface
                 if ($this->client->ifIndexExist($this)) {
                     $this->client->delete($params);
                 }
-
             }
-
         } catch (\Exception $e) {
             error_log($e->getMessage(), 0);
         }
-
-
     }
 
     /**
-     * @param $id
-     * @param $type
+     * Get a ssingle document.
+     *
+     * @param string $type The document type.
+     * @param mixed  $id   The document id.
+     *
      * @return array
      */
-    public function getDocument($type,$id)
+    public function getDocument($type, $id)
     {
 
         $params['index'] = $this->name;
@@ -155,25 +143,21 @@ class Index implements IndexInterface
         $params['id'] = $id;
         $response = [];
         try {
-
             if ($this->client->getHealth()) {
                 if ($this->client->ifIndexExist($this)) {
                     $response = $this->client->get($params);
-
                 }
-
             }
-
-
         } catch (\Exception $e) {
             error_log($e->getMessage(), 0);
         }
+ 
         return $response;
-
     }
 
     /**
-     *  Get Index current mapping
+     * Get Index current mapping
+     *
      * @return array
      */
     public function getMapping()
@@ -182,7 +166,10 @@ class Index implements IndexInterface
     }
 
     /**
-     * @param $mapping
+     *Get Mapping default parameter.
+     *
+     * @param array $mapping The resource mapping.
+     *
      * @return array
      */
     public function getDefaultParameters($mapping)
@@ -194,12 +181,13 @@ class Index implements IndexInterface
                     'analyzer' => [
                         'folding_analyzer' => [
                             'tokenizer' => "standard",
-                            'filter' => ["standard", "asciifolding", "lowercase","word_delimiter"],
+                            'filter' => ["standard", "asciifolding", "lowercase", "word_delimiter"],
                         ],
                     ],
                 ],
             ],
         ];
+
         if (!empty($mapping) && is_array($mapping)) {
             $params['body']['mappings'] = $mapping;
         }
@@ -211,23 +199,22 @@ class Index implements IndexInterface
      * @param SearchReQuestInterface $searchRequest
      * @return array
      */
-    public function search(SearchReQuestInterface $searchRequest){
+    public function search(SearchReQuestInterface $searchRequest)
+    {
         $params = $searchRequest->generateRequest();
-        if(!isset($params['index'])){
+
+        if (!isset($params['index'])) {
             $params['index'] = $this->name;
         }
-        $results = [];
-        try {
 
+        $results = [];
+
+        try {
             $results = $this->client->search($params);
         } catch (\Exception $e) {
-
             error_log($e->getMessage(), 0);
         }
 
         return $results;
-
     }
-
-
 }

@@ -22,17 +22,19 @@ class Document
     protected $id;
 
     /**
-     * @param $type
-     * @param $field
-     * @param null $id
-     * @param array $mapping
+     * The Es Document.
+     *
+     * @param string $type    The type of this document.
+     * @param array  $field   The field of this document.
+     * @param null   $id      The id of this document.
+     * @param array  $mapping The mapping of this document.
      */
-    public function __construct($type, $field, $id = NULL, $mapping=[])
+    public function __construct($type, $field, $id = null, $mapping = [])
     {
         $this->type = $type;
         $this->field = $field;
         $this->mapping = $mapping;
-        $this->id= $id;
+        $this->id = $id;
     }
 
     /**
@@ -98,6 +100,4 @@ class Document
     {
         $this->id = $id;
     }
-
-
 }

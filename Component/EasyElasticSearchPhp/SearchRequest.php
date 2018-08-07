@@ -19,38 +19,43 @@ class SearchRequest implements SearchReQuestInterface
     protected $request;
     protected $index;
 
-
-    /**
-     * SearchRequest constructor.
-     *
-     */
-    public function __construct()
-    {
-
-    }
-
     /**
      * @return mixed
      */
     public function generateRequest()
     {
         if (empty($this->request)) {
-             $this->request['body']['query']['filtered']['query']['query_string']['query'] = '*';
+             $this->request['body']['query']['bool']['must']['query_string']['query'] = '*';
+
             return $this->request;
         } else {
             return $this->request;
         }
-
     }
 
-    public function setString($string){
-        $this->request['body']['query']['filtered']['query']['query_string']['query'] = $string.'*';
-        $this->request['body']['query']['filtered']['query']['query_string']['fields'] = [
+    /**
+     * Add query string.
+     *
+     * @param string $string The query string.
+     * @return void
+     */
+    public function setString($string)
+    {
+        $this->request['body']['query']['bool']['must']['query_string']['query'] = $string.'*';
+        $this->request['body']['query']['bool']['must']['query_string']['fields'] = [
             '_all',
             '*.asciifolding',
         ];
     }
 
+    /**
+     * Add a filter.
+     *
+     * @param string $type   The filter type.
+     * @param array  $fields The filter fields.
+     *
+     * @return void
+     */
     public function addFilter($type, array $fields)
     {
         foreach ($fields as $fieldName => $value) {
@@ -60,40 +65,48 @@ class SearchRequest implements SearchReQuestInterface
 
     /**
      * Set From parameter.
+     *
      * @param int $value
      */
-     public function setFrom($value){
-         if (is_int($value)){
-             $this->request['from']= $value;
-         }else{
-             throw new \LogicException('from parameter must be an integer');
-         }
+    public function setFrom($value)
+    {
+        if (is_int($value)) {
+            $this->request['from'] = $value;
+        } else {
+            throw new \LogicException('from parameter must be an integer');
+        }
+    }
 
-     }
-    public function setIndex(Index $index){
+    /**
+     * Set The index to search upon.
+     *
+     * @param Index $index The index.
+     *
+     * @return void
+     */
+    public function setIndex(Index $index)
+    {
         $this->request['index'] = $index->getName();
         $this->index = $index;
-
     }
 
     /**
      * set size parameter.
+     *
      * @param int $value
      */
-    public function setSize($value){
-        if (is_int($value)){
-            $this->request['size']= $value;
-        }else{
+    public function setSize($value)
+    {
+        if (is_int($value)) {
+            $this->request['size'] = $value;
+        } else {
             throw new \LogicException('size parameter must be an integer');
         }
-
     }
 
     protected function checkTypeFilter($type)
     {
-
-
+      // TODO check  the filter.
+        return true;
     }
-
-
 }

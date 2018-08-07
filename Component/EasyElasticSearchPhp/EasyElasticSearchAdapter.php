@@ -8,15 +8,15 @@
  * Time: 19:50
  */
 
-
 namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
+
 use Pagerfanta\Adapter\AdapterInterface;
 
 /**
  * Class EasyElasticSearchAdapter
  * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
-class  EasyElasticSearchAdapter implements AdapterInterface
+class EasyElasticSearchAdapter implements AdapterInterface
 {
     /**
      * @var
@@ -38,6 +38,12 @@ class  EasyElasticSearchAdapter implements AdapterInterface
      */
     private $searchable;
 
+    /**
+     * Es adapter constructor.
+     *
+     * @param SearchReQuestInterface $request The request.
+     * @param Index                  $index   The index to search upon.
+     */
     public function __construct(SearchReQuestInterface $request, Index $index)
     {
         $this->request = $request;
@@ -53,6 +59,7 @@ class  EasyElasticSearchAdapter implements AdapterInterface
     {
         if (!$this->resultSet) {
             $this->resultSet = $this->search();
+
             return $this->resultSet["hits"]['total'];
         }
 
@@ -63,7 +70,7 @@ class  EasyElasticSearchAdapter implements AdapterInterface
      * Returns the search ResultSet. Will return null if getSlice has not yet been
      * called.
      *
-     * @return
+     * @return mixed
      */
     public function getResultSet()
     {
@@ -82,9 +89,16 @@ class  EasyElasticSearchAdapter implements AdapterInterface
     {
         $this->request->setFrom($offset);
         $this->request->setSize($length);
+
         return $this->resultSet = $this->search();
     }
-    protected function search(){
+    /**
+     * Search resources.
+     *
+     * @return void
+     */
+    protected function search()
+    {
         return $this->index->search($this->request);
     }
 }
