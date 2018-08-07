@@ -9,11 +9,13 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Services;
+
 use Symfony\Component\Form\FormFactory;
 use Doctrine\ORM\EntityManager;
 use EscapeHither\CrudManagerBundle\Entity\Resource;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Symfony\Component\Form\Form;
+
 class FormFactoryHandler {
     /**
      * @var RequestParameterHandler

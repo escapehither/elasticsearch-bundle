@@ -15,7 +15,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use EscapeHither\SearchManagerBundle\Utils\RequestHandlerUtils;
 
-
+/**
+ * Search request Parameter Handler.
+ */
 class RequestParameterHandler extends RequestHandlerUtils
 {
     protected $name;
@@ -40,47 +42,59 @@ class RequestParameterHandler extends RequestHandlerUtils
     protected $parameters;
     protected $paginationConfig;
 
-    function __construct(RequestStack $requestStack, Container $container)
+    /**
+     * THe request parameter Handler constructor.
+     *
+     * @param RequestStack $requestStack The request stack.
+     * @param Container    $container    The conatainer.
+     */
+    public function __construct(RequestStack $requestStack, Container $container)
     {
         $this->requestStack = $requestStack;
         $this->container = $container;
-
     }
-    public function build(){
+
+    /**
+     * Handler build.
+     *
+     * @return void
+     */
+    public function build()
+    {
         $this->request = $this->requestStack->getCurrentRequest();
-        if($this->request){
+
+        if ($this->request) {
             $this->format = $this->request->getRequestFormat();
         }
 
         $attributes = $this->getAttributes();
+
         if (!empty($attributes)) {
             $this->resourceName = $attributes['name'];
-            $action_list = [
+            $actionList = [
               'searchAction',
             ];
 
             if ($this->resourceName == "redirect") {
                 return;
             }
-            if (in_array($attributes['action'], $action_list)) {
+            if (in_array($attributes['action'], $actionList)) {
                 // use when call resource configuration parameter.
                 $this->resourceConfigName = 'resource-'.$attributes['nameConfig'];
 
                 if ($this->container->hasParameter($this->resourceConfigName)) {
-
                     $parameters = $this->container->getParameter(
-                      $this->resourceConfigName
+                        $this->resourceConfigName
                     );
                     $this->indexClass = $parameters['entity'];
                 }
-
             }
 
             // use when call resource configuration parameter.
             $this->resourceServiceName = 'resource.'.$attributes['nameConfig'];
             // The name use for generating the view.
             $this->resourceViewName = RequestHandlerUtils::generateResourceViewName(
-              $attributes
+                $attributes
             );
             // The where is template for the view.
             $this->themePath = $this->generateThemePath($attributes);
@@ -90,7 +104,8 @@ class RequestParameterHandler extends RequestHandlerUtils
             $this->indexRoute = $attributes['nameConfig'].'_index';
             // Repository configuration.
             $this->indexConfig = $attributes['index'];
-            if(isset($attributes['pagination'])){
+
+            if (isset($attributes['pagination'])) {
                 $this->paginationConfig = $attributes['pagination'];
             }
 
@@ -99,27 +114,25 @@ class RequestParameterHandler extends RequestHandlerUtils
             $this->actionName = $attributes['action'];
             $this->routeName = $attributes['_route'];
             $this->parameters = $this->getParameters();
-
         }
-
     }
 
 
     /**
      * @return mixed
      */
-    public function getActionName() {
+    public function getActionName()
+    {
         return $this->actionName;
     }
 
     /**
      * @return mixed
      */
-    public function getRouteName() {
+    public function getRouteName()
+    {
         return $this->routeName;
     }
-
-
 
     /**
      * @return string
@@ -130,6 +143,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
+     * Get the index name.
+     *
      * @return string
      */
     public function getIndexName()
@@ -138,6 +153,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
+     * Get The type of request.
+     *
      * @return string
      */
     public function getType()
@@ -145,24 +162,34 @@ class RequestParameterHandler extends RequestHandlerUtils
         return $this->indexConfig['type'];
     }
 
-    public function getPaginationSize(){
+    /**
+     * Get the pagination size.
+     *
+     * @return int/void
+     */
+    public function getPaginationSize()
+    {
         $size = 10;
-        if(isset($this->paginationConfig['size'])){
+        if (isset($this->paginationConfig['size'])) {
             $size =  $this->paginationConfig['size'];
         }
-        return $size;
 
+        return $size;
     }
 
-
     /**
+     * Get the request format.
+     *
      * @return mixed
      */
-    public function getFormat() {
+    public function getFormat()
+    {
         return $this->format;
     }
 
     /**
+     * Get the repository class.
+     *
      * @return string
      */
     public function getRepositoryClass()
@@ -171,6 +198,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
+     * Get the theme path.
+     *
      * @return string
      */
     public function getThemePath()
@@ -179,6 +208,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
+     * Get the resource view name.
+     *
      * @return string
      */
     public function getResourceViewName()
@@ -187,6 +218,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
+     * Get the resource config name.
+     *
      * @return string
      */
     public function getResourceConfigName()
@@ -195,6 +228,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
+     * Get the resource name.
+     *
      * @return mixed
      */
     public function getResourceName()
@@ -203,6 +238,8 @@ class RequestParameterHandler extends RequestHandlerUtils
     }
 
     /**
+     * Get the bundle name.
+     *
      * @return mixed
      */
     public function getBundleName()
@@ -218,13 +255,13 @@ class RequestParameterHandler extends RequestHandlerUtils
         return $this->name;
     }
 
-
     public function getRepositoryMethod()
     {
         return $this->indexConfig['method'];
-
     }
-    public function getParameters(){
+
+    public function getParameters()
+    {
         return true;
         //return $this->request->all();
     }
@@ -232,9 +269,10 @@ class RequestParameterHandler extends RequestHandlerUtils
     /**
      * @return null|string
      */
-    public function getString(){
-        $string = NULL;
-        if($this->request->query->get('string')){
+    public function getString()
+    {
+        $string = null;
+        if ($this->request->query->get('string')) {
             $string = $this->request->query->get('string');
         }
 

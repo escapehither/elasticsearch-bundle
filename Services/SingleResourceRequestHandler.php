@@ -9,11 +9,11 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Services;
+
 use Doctrine\ORM\EntityManager;
 
-
-
-class SingleResourceRequestHandler {
+class SingleResourceRequestHandler
+{
 
     /**
      * @var RequestParameterHandler
@@ -30,29 +30,26 @@ class SingleResourceRequestHandler {
         $this->requestParameterHandler = $requestParameterHandler;
         $this->requestParameterHandler->build();
         $this->em = $em;
-
-        
     }
 
-
-
-    public function process($parameter){
+    public function process($parameter)
+    {
         // TODO CHECK if COSTUME REPOSITORY METHOD WORK AND CHECK TO RETURN ONLY ONE RESOURCE.
         $this->requestParameterHandler;
         $repository = $this->em->getRepository($this->requestParameterHandler->getRepositoryClass());
         $repositoryArguments = $this->requestParameterHandler->getRepositoryArguments();
         $repositoryMethod = $this->requestParameterHandler->getRepositoryMethod();
-        if (NULL != $repositoryMethod  && NULL != $repositoryArguments) {
+ 
+        if (null !== $repositoryMethod  && null !== $repositoryArguments) {
             $callable = [$repository, $repositoryMethod];
+
             return call_user_func_array($callable, $repositoryArguments);
-
-
-        }
-        elseif (NULL != $repositoryMethod  && NULL == $repositoryArguments) {
+        } elseif (null !== $repositoryMethod  && null === $repositoryArguments) {
             $callable = [$repository, $repositoryMethod];
-            return call_user_func($callable,$parameter);
 
+            return call_user_func($callable, $parameter);
         }
+
         return $repository->find($parameter);
 
 
