@@ -24,14 +24,15 @@ class EscapeHitherSearchManagerExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         // add a new parameter
+        $container->setParameter('escape_hither_search_manager.host', $config['host']);
 
-        if(!empty($config['indexes'])){
+        if (!empty($config['indexes'])) {
             //$container->setParameter('', $config['indexes']);
-            foreach($config['indexes'] as $key=>$value){
+            foreach ($config['indexes'] as $key => $value) {
                 $container->setParameter($value['entity'], $value);
             }
-
         }
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

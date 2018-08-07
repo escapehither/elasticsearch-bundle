@@ -21,9 +21,19 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('escape_hither_search_manager');
         $rootNode
             ->children()
+                ->scalarNode('host')
+                  ->defaultValue('localhost')
+                ->end()
+                ->scalarNode('port')
+                  ->defaultValue('9200')
+                ->end()
                 ->arrayNode('indexes')
                     ->prototype('array')
                         ->children()
+                            ->scalarNode('host')
+                            ->end()
+                            ->scalarNode('port')
+                            ->end()
                             ->scalarNode('entity')->isRequired()->cannotBeEmpty()->end()
                             ->scalarNode('index_name')->isRequired()->cannotBeEmpty()->end()
                             ->scalarNode('type')->isRequired()->cannotBeEmpty()->end()
@@ -42,8 +52,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
+
         return $treeBuilder;
     }
-
-
 }
