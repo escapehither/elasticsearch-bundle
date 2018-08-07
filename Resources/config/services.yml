@@ -22,4 +22,4 @@ services:
             
     escapehither.search_request_handler:
             class: "%escapehither.search_request_handler.class%"
-            arguments: ["@escapehither.search_request_parameter_handler","@doctrine.orm.entity_manager"]
+            arguments: ["@escapehither.search_request_parameter_handler"]

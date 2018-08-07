@@ -17,8 +17,6 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
 
-
-
 /**
  * Index delete and update Es Document.
  * Class IndexerListener
@@ -28,6 +26,7 @@ class IndexerListener
 {
     private $container;
     const INDEX_NAME = 'index_name';
+    const HOST_NAME = 'escape_hither_search_manager.host';
 
 
     /**
@@ -48,7 +47,6 @@ class IndexerListener
         if ($this->container->hasParameter($class)) {
             $this->indexDocument($class, $object);
         }
-
     }
 
     /**
@@ -59,10 +57,8 @@ class IndexerListener
         $object = $args->getEntity();
         $class = get_class($object);
         if ($this->container->hasParameter($class)) {
-
             $this->indexDocument($class, $object);
         }
-
     }
 
     /**
@@ -76,7 +72,6 @@ class IndexerListener
             $parameter = $this->container->getParameter($class);
             $this->getIndex($parameter[self::INDEX_NAME])->deleteDocument($parameter['type'], $object->getId());
         }
-
     }
 
     /**
@@ -90,13 +85,16 @@ class IndexerListener
         $document = $documentHandler->CreateDocument();
 
         $fieldMappings = $this->getEntityMetadataFieldMappings($class);
+        //dump($class);
         $mapping[$document->getType()] = [];
+        //dump($fieldMappings);
+        //die('ok');
         foreach ($fieldMappings as $key => $value) {
-            if($value['type']=='string'){
-                $mapping[$document->getType()]['properties'][$value['fieldName']]=$this->getDefaultStringAnalyzer();
+            if ('string' === $value['type']) {
+                $mapping[$document->getType()]['properties'][$value['fieldName']] = $this->getDefaultStringAnalyzer();
             }
-
         }
+
         $document->setMapping($mapping);
         $document->setId($object->getId());
         $this->getIndex($parameter[self::INDEX_NAME])->indexDocument($document);
@@ -108,7 +106,7 @@ class IndexerListener
      */
     protected function getIndex($indexName)
     {
-        return $index = new Index($indexName, new EsClient());
+        return $index = new Index($indexName, new EsClient($this->container->getParameter(self::HOST_NAME)));
     }
 
 
@@ -119,9 +117,22 @@ class IndexerListener
      */
     protected function getEntityMetadataFieldMappings($entity)
     {
+        // TODO ADD CASHING
         $factory = new DisconnectedMetadataFactory($this->container->get('doctrine'));
         $metadataClass = $factory->getClassMetadata($entity)->getMetadata()[0];
-        return $metadataClass->fieldMappings;
+        $baseMapping = $metadataClass->fieldMappings;
+
+        foreach ($metadataClass->associationMappings as $fieldAssociation => $association) {
+            $metadataAssociation = $factory->getClassMetadata($association['targetEntity'])->getMetadata()[0];
+            $mappingAssociation = $metadataAssociation->fieldMappings;
+
+            foreach ($mappingAssociation as $keyMapping => $mapping) {
+                $mapping['fieldName'] = $fieldAssociation.'.'.$mapping['fieldName'];
+                $baseMapping[$mapping['fieldName']] = $mapping ;
+            }
+        }
+
+        return $baseMapping;
     }
 
     /**
@@ -132,18 +143,16 @@ class IndexerListener
         return $default = [
             'type' => 'string',
             'analyzer' => 'standard',
-            'fields'=>[
+            'fields' => [
             'asciifolding' => [
                 'type' => 'string',
-                'analyzer' => 'folding_analyzer'
+                'analyzer' => 'folding_analyzer',
             ],
             'exact_value' => [
                 'type' => 'string',
-                'index' => 'not_analyzed'
-            ]
-        ]];
-
+                'index' => 'not_analyzed',
+            ],
+            ],
+        ];
     }
-
-
 }
