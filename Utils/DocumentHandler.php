@@ -28,7 +28,8 @@ use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
  * Class DocumentHandler
  * @package EscapeHither\SearchManagerBundle\Utils
  */
-class DocumentHandler {
+class DocumentHandler
+{
     private $configuration;
     private $object;
 
@@ -36,29 +37,33 @@ class DocumentHandler {
      * @param $object
      * @param $config
      */
-    public function __construct($object,$config) {
-    $this->object = $object;
-    $this->configuration = $config;
+    public function __construct($object,$config)
+    {
+        $this->object = $object;
+        $this->configuration = $config;
     }
 
     /**
      * @return mixed
      */
-    public function getConfiguration() {
+    public function getConfiguration()
+    {
         return $this->configuration;
     }
 
     /**
      * @param mixed $configuration
      */
-    public function setConfiguration($configuration) {
+    public function setConfiguration($configuration)
+    {
         $this->configuration = $configuration;
     }
 
     /**
      * @return \Closure
      */
-    public function getTagGenerator() {
+    public function getTagGenerator()
+    {
         return function (PersistentCollection $persistentCollection) {
             $normalizer = new ObjectNormalizer();
             $normalizer->setCircularReferenceHandler(function ($object) {
@@ -69,19 +74,21 @@ class DocumentHandler {
             $fieldName = $persistentCollection->getMapping()['fieldName'];
             $tab = $persistentCollection->toArray();
             $tag = [];
+
             foreach ($tab as $item) {
                 foreach ($serializer->normalize($item) as $name => $value) {
                     $tagInclusion = $this->getTagInclusion($fieldName);
-                    if(!empty($tagInclusion) ){
-                        if(in_array($name,$tagInclusion)){
+
+                    if (!empty($tagInclusion)) {
+                        if (in_array($name, $tagInclusion)) {
                             $tag[$name][] = $value;
                         }
-
-                    }else{
+                    } else {
                         $tag[$name][] = $value;
                     }
                 }
             }
+
             return $tag;
         };
     }
@@ -89,8 +96,8 @@ class DocumentHandler {
     /**
      * @return array
      */
-
-    public function CreateDocumentFields() {
+    public function CreateDocumentFields()
+    {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
         $normalizer = new ObjectNormalizer($classMetadataFactory);
@@ -101,48 +108,53 @@ class DocumentHandler {
                 $normalizer->setCallbacks(array($keyTag => $collectionToTagsCallback));
             }
         }
+
         $normalizer->setCircularReferenceHandler(function ($object) {
             //TODO interface
             return $object->getName();
         });
         $dataUriNormalizer = new DataUriNormalizer();
-        $normalizers = array($normalizer,$dataUriNormalizer);
+        $normalizers = array($normalizer, $dataUriNormalizer);
         $serializer = new Serializer($normalizers, $encoders);
-        $documentFields = $serializer->normalize($this->object, NULL, array('groups' => array('index')));
+        $documentFields = $serializer->normalize($this->object, null, array('groups' => array('index')));
+
         return $documentFields;
     }
 
     /**
      * @return \EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document
      */
-    public function createDocument(){
+    public function createDocument()
+    {
 
-        return new  Document($this->configuration['type'],$this->CreateDocumentFields());
+        return new  Document($this->configuration['type'], $this->CreateDocumentFields());
     }
 
     /**
      * @param $fieldName
      * @return array
      */
-    private function getTagInclusion($fieldName){
+    private function getTagInclusion($fieldName)
+    {
         $exclusion = [];
         $configurationTag = $this->getTagsConfig();
-        if(!empty($configurationTag) && !empty($configurationTag[$fieldName]['include'])){
+
+        if (!empty($configurationTag) && !empty($configurationTag[$fieldName]['include'])) {
             $exclusion = $configurationTag[$fieldName]['include'];
         }
-        return $exclusion;
 
+        return $exclusion;
     }
 
     /**
      * @return array
      */
-    private function getTagsConfig(){
-        if(!empty($this->configuration['tags'])){
+    private function getTagsConfig()
+    {
+        if (!empty($this->configuration['tags'])) {
             return $this->configuration['tags'];
         }
+
         return [];
-
     }
-
 }

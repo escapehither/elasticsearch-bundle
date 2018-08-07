@@ -17,8 +17,7 @@ use Elasticsearch\Client;
  * Class EsIndexer
  * @package EscapeHither\SearchManagerBundle\Utils
  */
-class EsIndexer {
-    
+class EsIndexer { 
 
     /**
      * @param string $name
