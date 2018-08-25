@@ -59,7 +59,34 @@ class SearchRequest implements SearchReQuestInterface
     public function addFilter($type, array $fields)
     {
         foreach ($fields as $fieldName => $value) {
-            $this->request['body']['query']['filtered']['query']['bool']['must'][][][$type] = [$fieldName => $value];
+            //Before
+            //$this->request['body']['query']['filtered']['query']['bool']['must'][][][$type] = [$fieldName => $value];
+            // After.
+            if ("range" === $type) {
+                if ($value['gte'] != "" and $value['lte'] != "") {
+                    $this->request['body']['query']['bool']['filter'][][][$type] = [$fieldName => $value];
+                }
+            } else {
+                empty($value)?:$this->request['body']['query']['bool']['filter'][][][$type] = [$fieldName => $value];
+            }
+        }
+    }
+
+    /**
+     * Add Aggregate.
+     *
+     * @param array $fields The aggs fields.
+     *
+     * @return void
+     */
+    public function addAggs(array $fields)
+    {
+        foreach ($fields as $fieldName => $value) {
+            // TODO  require field and size.
+            $this->request['body']['aggs'][$value['name']]['terms'] =  [
+                'field' => $fieldName,
+                'size' => $value['size'],
+            ];
         }
     }
 
@@ -88,6 +115,18 @@ class SearchRequest implements SearchReQuestInterface
     {
         $this->request['index'] = $index->getName();
         $this->index = $index;
+    }
+
+    /**
+     * Set The index type to search upon.
+     *
+     * @param string $type The request index type.
+     *
+     * @return void
+     */
+    public function setType($type)
+    {
+        $this->request['type'] = $type;
     }
 
     /**
