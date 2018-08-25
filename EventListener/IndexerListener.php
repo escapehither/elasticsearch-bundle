@@ -16,6 +16,7 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * Index delete and update Es Document.
@@ -25,16 +26,21 @@ use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
 class IndexerListener
 {
     private $container;
-    const INDEX_NAME = 'index_name';
-    const HOST_NAME = 'escape_hither_search_manager.host';
-
+    private const INDEX_NAME = 'index_name';
+    private const FIELD_NAME = 'fieldName';
 
     /**
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     * Index Listener Constructor.
+     *
+     * @param array           $indexes  The indexes
+     * @param string          $host     Es host.
+     * @param ManagerRegistry $doctrine Doctrine registry.
      */
-    public function __construct(Container $container)
+    public function __construct($indexes, $host, ManagerRegistry $doctrine)
     {
-        $this->container = $container;
+        $this->indexes = $indexes;
+        $this->host = $host;
+        $this->doctrine = $doctrine;
     }
 
     /**
@@ -44,7 +50,8 @@ class IndexerListener
     {
         $object = $args->getEntity();
         $class = get_class($object);
-        if ($this->container->hasParameter($class)) {
+
+        if ($this->indexHasParameter($class)) {
             $this->indexDocument($class, $object);
         }
     }
@@ -56,7 +63,8 @@ class IndexerListener
     {
         $object = $args->getEntity();
         $class = get_class($object);
-        if ($this->container->hasParameter($class)) {
+
+        if ($this->indexHasParameter($class)) {
             $this->indexDocument($class, $object);
         }
     }
@@ -68,8 +76,9 @@ class IndexerListener
     {
         $object = $args->getEntity();
         $class = get_class($object);
-        if ($this->container->hasParameter($class)) {
-            $parameter = $this->container->getParameter($class);
+
+        if ($this->indexHasParameter($class)) {
+            $parameter = $this->indexes[$class];
             $this->getIndex($parameter[self::INDEX_NAME])->deleteDocument($parameter['type'], $object->getId());
         }
     }
@@ -80,18 +89,16 @@ class IndexerListener
      */
     protected function indexDocument($class, $object)
     {
-        $parameter = $this->container->getParameter($class);
+        $parameter = $this->indexes[$class];
         $documentHandler = new DocumentHandler($object, $parameter);
         $document = $documentHandler->CreateDocument();
 
         $fieldMappings = $this->getEntityMetadataFieldMappings($class);
-        //dump($class);
         $mapping[$document->getType()] = [];
-        //dump($fieldMappings);
-        //die('ok');
+
         foreach ($fieldMappings as $key => $value) {
             if ('string' === $value['type']) {
-                $mapping[$document->getType()]['properties'][$value['fieldName']] = $this->getDefaultStringAnalyzer();
+                $mapping[$document->getType()]['properties'][$value[self::FIELD_NAME]] = $this->getDefaultStringAnalyzer();
             }
         }
 
@@ -106,7 +113,7 @@ class IndexerListener
      */
     protected function getIndex($indexName)
     {
-        return $index = new Index($indexName, new EsClient($this->container->getParameter(self::HOST_NAME)));
+        return $index = new Index($indexName, new EsClient($this->host));
     }
 
 
@@ -118,7 +125,7 @@ class IndexerListener
     protected function getEntityMetadataFieldMappings($entity)
     {
         // TODO ADD CASHING
-        $factory = new DisconnectedMetadataFactory($this->container->get('doctrine'));
+        $factory = new DisconnectedMetadataFactory($this->doctrine);
         $metadataClass = $factory->getClassMetadata($entity)->getMetadata()[0];
         $baseMapping = $metadataClass->fieldMappings;
 
@@ -127,8 +134,8 @@ class IndexerListener
             $mappingAssociation = $metadataAssociation->fieldMappings;
 
             foreach ($mappingAssociation as $keyMapping => $mapping) {
-                $mapping['fieldName'] = $fieldAssociation.'.'.$mapping['fieldName'];
-                $baseMapping[$mapping['fieldName']] = $mapping ;
+                $mapping[s] = $fieldAssociation.'.'.$mapping[self::FIELD_NAME];
+                $baseMapping[$mapping[self::FIELD_NAME]] = $mapping ;
             }
         }
 
@@ -154,5 +161,28 @@ class IndexerListener
             ],
             ],
         ];
+    }
+    /**
+     * Get parameter Class.
+     *
+     * @param string $class The resource class.
+     *
+     * @return string
+     */
+    protected function getParameterClass($class)
+    {
+        return $class;
+    }
+
+    /**
+     * Index has parameter.
+     *
+     * @param string $class The resource class.
+     *
+     * @return bool
+     */
+    protected function indexHasParameter($class)
+    {
+        return array_key_exists($class, $this->indexes);
     }
 }

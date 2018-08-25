@@ -9,12 +9,12 @@ services:
     _defaults: { public: true }
 
     escapehither.doctrine_indexer_listener:
-                class: '%escape_hither.indexer.class%'
-                arguments: ["@service_container"]
-                tags:
-                    - { name: doctrine.event_listener, event: postPersist }
-                    - { name: doctrine.event_listener, event: postUpdate }
-                    - { name: doctrine.event_listener, event: preRemove }
+            class: '%escape_hither.indexer.class%'
+            arguments: ["%escape_hither.search_manager.indexes%", "%escape_hither.search_manager.host%", "@doctrine"]
+            tags:
+                - { name: doctrine.event_listener, event: postPersist }
+                - { name: doctrine.event_listener, event: postUpdate }
+                - { name: doctrine.event_listener, event: preRemove }
 
     escapehither.search_request_parameter_handler:
             class: "%escapehither.search_request_parameter_handler.class%"
@@ -22,4 +22,4 @@ services:
             
     escapehither.search_request_handler:
             class: "%escapehither.search_request_handler.class%"
-            arguments: ["@escapehither.search_request_parameter_handler"]
+            arguments: ["@escapehither.search_request_parameter_handler", "%escape_hither.search_manager.host%", "%escape_hither.search_manager.indexes%"]
