@@ -15,6 +15,7 @@ use Elasticsearch\Client;
 
 /**
  * Class EsClient
+ *
  * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class EsClient
@@ -77,6 +78,7 @@ class EsClient
 
     /**
      * Delete an Index.
+     *
      * @param Index $index The index to delete.
      *
      * @return array
@@ -174,6 +176,7 @@ class EsClient
     {
         return $this->client->get($params);
     }
+
     /**
      * Search a resource.
      *
