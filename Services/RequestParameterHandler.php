@@ -147,9 +147,9 @@ class RequestParameterHandler extends RequestHandlerUtils
      *
      * @return string
      */
-    public function getIndexName()
+    public function getIndexEntity()
     {
-        return $this->indexConfig['name'];
+        return $this->indexConfig['entity'];
     }
 
     /**

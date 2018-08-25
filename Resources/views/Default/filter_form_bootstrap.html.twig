@@ -3,12 +3,12 @@
 
 {#For a future release I could move it to a form type if there is a good reason for it.#}
 {% if facets is defined and facets is not null %}
-    <form id="filter-form" class="small-12 columns">
+    <form id="filter-form" class="small-3 columns">
         <div class="section-title hidden-xs">Refine by</div>
         <div class="section-title refine hidden-sm hidden-md hidden-lg" aria-expanded="true" data-toggle="collapse" data-target="#filter-block">Refine by</div>
         <div id="filter-block" class="collapse in" aria-expanded="false">
         {% for name, facet in facets %}
-             {% if loop['index'] == 1 or loop['index'] == 6 or loop['index'] == 10 %}
+            {% if loop['index'] == 1 or loop['index'] == 6 or loop['index'] == 10 %}
                 <div class="filter-container">
                 {% if loop['index'] == 1 %}
                     <div class="filter-container-title"><span>General information</span></div>
@@ -24,19 +24,16 @@
                 <div class="filter-item-title collapsed" data-toggle="collapse" data-target="#list{{ loop.index }}">
                     {{ facetTags[name]['display_name'] }}
                 </div>
+
                 {% if name matches '/taxons/' %}
                     {% set name = 'taxons'%}
                 {% endif %}
                 {% if name matches '/range-date/' %}
                     {% set name = 'range-date'%}
                 {% endif %}
-                {% if name starts with 'date'%}
-                    {% set name = 'date'%}
-                {% endif %}
 
                 {# set visible for checked filters #}
                 {% set visible = false %}
-
                 {% for element in facet %}
                     {% if filters is iterable %}
                         {% for elem in filters %}
@@ -129,6 +126,7 @@
                                 </label>
                             </li>
                         {% else %}
+
                             {% if element['doc_count'] > 0 %} {# The facet is hide if the doc count is null#}
                                 {% set visible_element = false %}
                                 {% if filters is iterable %}
@@ -168,14 +166,13 @@
                 </div>
                     </div>
                 {% endif %}
-            {% if loop['index'] == 1 or loop['index'] ==  5 or loop['index'] == 9 or loop['index'] == 11 %}
+            {% if loop['index'] ==  5 or loop['index'] == 9 or loop['index'] == 11 %}
                 </div>
             {% endif %}
-            
         {% endfor %}
         <input type="hidden" name="q" value="{{ string }}"/>
-        <input type="hidden" name="string" value="{{ string }}"/>
-        <input type="hidden" name="sort" value="{{ sort }}"/>
+        <input type="hidden" name="search_text" value="{{ string }}"/>
+            <input type="hidden" name="sort" value="{{ sort }}"/>
         <input class="filter-button" type="submit" value="FILTER" class="btn btn-info"/>
         </div>
     </form>

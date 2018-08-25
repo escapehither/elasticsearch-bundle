@@ -12,13 +12,14 @@ namespace EscapeHither\SearchManagerBundle\Services;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class SearchEventDispatcher 
+class SearchEventDispatcher
 {
     /**
      * @var RequestParameterHandler
      */
     protected $requestParameterHandler;
     protected $dispatcher;
+
     public function __construct(RequestParameterHandler $requestParameterHandler, EventDispatcherInterface $dispatcher)
     {
         $this->requestParameterHandler = $requestParameterHandler;
@@ -26,9 +27,9 @@ class SearchEventDispatcher
         $this->dispatcher = $dispatcher;
     }
 
-    public function dispatch($eventName, $resourceName, $event){
+    public function dispatch($eventName, $resourceName, $event)
+    {
         $this->dispatcher->dispatch($eventName, $event);
         $this->dispatcher->dispatch($eventName.'.'.$resourceName, $event);
-
     }
 }

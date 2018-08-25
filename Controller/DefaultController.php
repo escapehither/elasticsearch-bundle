@@ -33,7 +33,7 @@ class DefaultController extends Controller
         $searchRequestHandler = $this->get('escapehither.search_request_handler');
         $resources = $searchRequestHandler->search();
 
-        if ($format == 'html') {
+        if ('html' === $format) {
             return $this->render($requestParameterHandler->getThemePath(), $resources);
         }
         //TODO add other format.

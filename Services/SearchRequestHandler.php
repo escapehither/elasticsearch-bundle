@@ -23,7 +23,9 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EasyElasticS
  */
 class SearchRequestHandler
 {
-    const HOST_NAME = 'escape_hither_search_manager.host';
+    private const HOST_NAME = 'escape_hither.search_manager.host';
+    private const INDEXES = 'escape_hither.search_manager.indexes';
+
 
     /**
      * @var RequestParameterHandler
@@ -37,19 +39,28 @@ class SearchRequestHandler
     private $request;
     private $container;
     private $links = [];
-
+    private $indexName;
+    private $host;
+    private $tags;
 
     /**
      * The request parameter handler constructor.
      *
      * @param RequestParameterHandler $requestParameterHandler The reuqest parameter handler.
+     * @param string                  $host
+     * @param array                   $indexes
      */
-    public function __construct(RequestParameterHandler $requestParameterHandler)
+    public function __construct(RequestParameterHandler $requestParameterHandler, $host, $indexes)
     {
         $this->requestParameterHandler = $requestParameterHandler;
+        $this->host = $host;
         $this->requestParameterHandler->build();
         $this->request = $this->requestParameterHandler->getRequest();
         $this->container = $this->requestParameterHandler->container;
+        $this->indexConfig = $indexes[$this->requestParameterHandler->getIndexEntity()];
+        $this->indexName = $this->indexConfig['index_name'];
+        $this->resourceType = $this->indexConfig['type'];
+        $this->tags = $this->indexConfig['facets']['tags_relation'];
     }
 
     /**
@@ -61,7 +72,7 @@ class SearchRequestHandler
     {
         $format = $this->requestParameterHandler->getFormat();
         $searchRequest = new SearchRequest();
-        $index = new Index($this->requestParameterHandler->getIndexName(), new EsClient($this->container->getParameter(self::HOST_NAME)));
+        $index = new Index($this->indexName, new EsClient($this->host));
         $results = $index->search($searchRequest);
     }
 
@@ -84,32 +95,61 @@ class SearchRequestHandler
      */
     public function search()
     {
+        $searchRequest = new SearchRequest();
+        $searchRequest->setType($this->resourceType);
+        $facetProvider = new EsFacetProvider($this->indexConfig, $this->host);
+        $filters = [];
+
         $page = 1;
         if (!empty($this->request->query->get('page'))) {
             $page = $this->request->query->get('page');
         }
+        $parameter = $this->request->query->all();
 
-        // Item per page to display.
+        if (!empty($parameter['filters'])) {
+            $facetDispatched = $facetProvider->dispatchFilter($parameter['filters']);
+            $searchRequest->addFilter('terms', $facetDispatched);
+            $searchRequest->addFilter('term', $parameter['filters']['date']);
+            $searchRequest->addFilter('range', $parameter['filters']['range-date']);
+            $filters = $parameter['filters'];
+        }
 
-        $format = $this->requestParameterHandler->getFormat();
-        $searchRequest = new SearchRequest();
+        $aggs = [];
+
+        foreach ($this->indexConfig['facets']['tags_relation'] as $keyRelation => $relation) {
+            $aggs = [
+                $keyRelation => [
+                    'name' => $keyRelation,
+                    'size' => 1000, //TODO must be greater than Zero.
+                ],
+            ];
+        }
+
+        empty($aggs) ? :$searchRequest->addAggs($aggs);
+        $searchRequest->addAggs($aggs);
 
         if ($this->requestParameterHandler->getString()) {
             $searchRequest->setString($this->requestParameterHandler->getString());
         }
 
-        $index = new Index($this->requestParameterHandler->getIndexName(), new EsClient($this->container->getParameter(self::HOST_NAME)));
+        $index = new Index($this->indexName, new EsClient($this->host));
         $adapter = new EasyElasticSearchAdapter($searchRequest, $index);
         $pagerFanta = new Pagerfanta($adapter);
         $pagerFanta->setCurrentPage($page);
 
         $pagerFanta->setMaxPerPage($this->requestParameterHandler->getPaginationSize());
         $results = $pagerFanta->getCurrentPageResults();
+        $facets = $facetProvider->getFacets($results);
+        $facetTags = $facetProvider->getFacetsTag();
 
-        if ('html' === $format) {
+        if ('html' === $this->requestParameterHandler->getFormat()) {
             return  ['data' => $pagerFanta,
                     'string' => $this->requestParameterHandler->getString(),
-                ];
+                    'facets' => $facets,
+                    'facetTags' => $facetTags,
+                    'filters' => $filters,
+                    'sort' => 'default',
+                    ];
         }
 
         $data['data'] = $results['hits']['hits'];
@@ -123,27 +163,6 @@ class SearchRequestHandler
         ];
 
         return $data;
-    }
-
-    /**
-     * @param $repositoryMethod
-     * @param $repositoryArguments
-     * @param $repository
-     * @return mixed
-     */
-    protected function getResourcesFromMethod($repositoryMethod, $repositoryArguments, $repository)
-    {
-        if (null !== $repositoryArguments) {
-            $callable = [$repository, $repositoryMethod];
-
-            return call_user_func_array($callable, $repositoryArguments);
-        } elseif (null === $repositoryArguments) {
-            $callable = [$repository, $repositoryMethod];
-
-            return call_user_func($callable);
-        }
-
-        return [];
     }
 
     /**
