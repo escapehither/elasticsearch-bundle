@@ -4,11 +4,11 @@
 {#For a future release I could move it to a form type if there is a good reason for it.#}
 {% if facets is defined and facets is not null %}
     <form id="filter-form" class="small-12 columns">
-        <div class="section-title hidden-xs">Refine by</div>
-        <div class="section-title refine hidden-sm hidden-md hidden-lg" aria-expanded="true" data-toggle="collapse" data-target="#filter-block">Refine by</div>
+        <div class="section-title hide-for-small-only"><h4>Refine by</h4></div>
+        <div class="section-title refine show-for-small-only" aria-expanded="true" data-toggle="collapse" data-target="#filter-block"><h4>Refine by</h4></div>
         <div id="filter-block" class="collapse in" aria-expanded="false">
         {% for name, facet in facets %}
-             {% if loop['index'] == 1 or loop['index'] == 6 or loop['index'] == 10 %}
+             {# {% if loop['index'] == 1 or loop['index'] == 6 or loop['index'] == 10 %}
                 <div class="filter-container">
                 {% if loop['index'] == 1 %}
                     <div class="filter-container-title"><span>General information</span></div>
@@ -17,18 +17,22 @@
                 {% else %}
                     <div class="filter-container-title"><span>Broadcast details</span></div>
                 {% endif %}
-            {% endif %}
+            {% endif %} #}
 
             {% if facet is not empty %}
+            <hr>
             <div class="filter clearfix">
                 <div class="filter-item-title collapsed" data-toggle="collapse" data-target="#list{{ loop.index }}">
-                    {{ facetTags[name]['display_name'] }}
+                   <h4>{{ facetTags[name]['display_name'] }}</h4> 
                 </div>
                 {% if name matches '/taxons/' %}
                     {% set name = 'taxons'%}
                 {% endif %}
                 {% if name matches '/range-date/' %}
                     {% set name = 'range-date'%}
+                {% endif %}
+                {% if name matches '/range-price/' %}
+                    {% set name = 'range-price'%}
                 {% endif %}
                 {% if name starts with 'date'%}
                     {% set name = 'date'%}
@@ -105,7 +109,7 @@
                                             id="{{ name ~ '-' ~ element['key']~ '-from' }}"
                                             type="text"
                                             name="filters[range-date][{{ element['key'] }}][gte]"
-                                            class="form-control brocast_date_picker pull-right"
+                                            class="form-control range_date_picker pull-right"
                                         />
                                     </div>
                                     <div class="filter-date">
@@ -123,7 +127,48 @@
                                             id="{{ name ~ '-' ~ element['key']~ '-to' }}"
                                             type="text"
                                             name="filters[range-date][{{ element['key'] }}][lte]"
-                                            class="form-control brocast_date_picker pull-right"
+                                            class="form-control range_date_picker pull-right"
+                                        />
+                                    </div>
+                                </label>
+                            </li>
+                        {% elseif name == "range-price" %}{# facet of type range price#}
+                            <li>
+                                <label>
+                                    <div class="filter-price">
+                                        <span>From</span>
+                                        <input
+                                            {% if filters is iterable %}
+                                                {% for elem in filters %}
+                                                    {% for key in elem|keys %}
+                                                        {% if key == element['key'] %}
+                                                            value = "{{ elem[key]['gte'] }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            id="{{ name ~ '-' ~ element['key']~ '-from' }}"
+                                            type="text"
+                                            name="filters[range-price][{{ element['key'] }}][gte]"
+                                            class="form-control  pull-right"
+                                        />
+                                    </div>
+                                    <div class="filter-price">
+                                        <span>To</span>
+                                        <input
+                                            {% if filters is iterable %}
+                                                {% for elem in filters %}
+                                                    {% for key in elem|keys %}
+                                                        {% if key == element['key'] %}
+                                                            value = "{{ elem[key]['lte'] }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            id="{{ name ~ '-' ~ element['key']~ '-to' }}"
+                                            type="text"
+                                            name="filters[range-price][{{ element['key'] }}][lte]"
+                                            class="form-control pull-right"
                                         />
                                     </div>
                                 </label>
@@ -168,15 +213,16 @@
                 </div>
                     </div>
                 {% endif %}
-            {% if loop['index'] == 1 or loop['index'] ==  5 or loop['index'] == 9 or loop['index'] == 11 %}
+            {# {% if loop['index'] == 1 or loop['index'] ==  5 or loop['index'] == 9 or loop['index'] == 11 %}
                 </div>
-            {% endif %}
+            {% endif %} #}
             
         {% endfor %}
         <input type="hidden" name="q" value="{{ string }}"/>
         <input type="hidden" name="string" value="{{ string }}"/>
         <input type="hidden" name="sort" value="{{ sort }}"/>
-        <input class="filter-button" type="submit" value="FILTER" class="btn btn-info"/>
+        <input type="submit" value="FILTER" class=" filter-button button"/>
         </div>
     </form>
 {% endif %}
+
