@@ -99,14 +99,46 @@ If you want to index your resource, add in your config file.
 
     ```yaml
    escape_hither_search_manager:
-       indexes:
-           product:
-               entity: Acme\Product
-               index_name: product
-               type: product
-               tags:
-                   categories:
-                       include: ['id','code','name']
+    host: es
+    indexes:
+        product:
+            entity: OpenMarketPlace\ProductManagerBundle\Entity\Product
+            index_name: open-market-place
+            type: product
+            facets: 
+                tags:
+                    categories:
+                        include: ['id','code','name']
+                tags_relation:
+                    offer.seller.id:
+                        entity: OpenMarketPlace\UserManagerBundle\Entity\Seller
+                        index_name: open-market-place
+                        type: seller
+                        field_name: commercialName
+                        display_name: Seller
+                        tag_type: terms  
+                dates:
+                    createdAt:
+                        field_name: createdAt
+                        display_name: date one
+                        tag_type: terms
+                    updatedAt:
+                        field_name: updatedAt
+                        display_name: date two
+                        tag_type: terms    
+                ranges:
+                    createddAt:
+                        field_name: createddAt
+                        display_name: range one
+                        tag_type: date
+                    updateddAt:
+                        field_name: updateddAt
+                        display_name: range two
+                        tag_type: date
+                    masterVariant.price:
+                        field_name: masterVariant.price
+                        display_name: price
+                        tag_type: price
     ```
 
 4:  Index all (Next feature)
