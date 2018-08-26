@@ -108,9 +108,10 @@ class SearchRequestHandler
 
         if (!empty($parameter['filters'])) {
             $facetDispatched = $facetProvider->dispatchFilter($parameter['filters']);
-            $searchRequest->addFilter('terms', $facetDispatched);
-            $searchRequest->addFilter('term', $parameter['filters']['date']);
-            $searchRequest->addFilter('range', $parameter['filters']['range-date']);
+            empty($facetDispatched) ? :$searchRequest->addFilter('terms', $facetDispatched);
+            empty($parameter['filters']['date']) ? :$searchRequest->addFilter('term', $parameter['filters']['date']);
+            empty($parameter['filters']['range-date']) ? :$searchRequest->addFilter('range', $parameter['filters']['range-date']);
+            empty($parameter['filters']['range-price']) ? :$searchRequest->addFilter('range', $parameter['filters']['range-price']);
             $filters = $parameter['filters'];
         }
 
