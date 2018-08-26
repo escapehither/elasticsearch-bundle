@@ -134,7 +134,7 @@ class IndexerListener
             $mappingAssociation = $metadataAssociation->fieldMappings;
 
             foreach ($mappingAssociation as $keyMapping => $mapping) {
-                $mapping[s] = $fieldAssociation.'.'.$mapping[self::FIELD_NAME];
+                $mapping[] = $fieldAssociation.'.'.$mapping[self::FIELD_NAME];
                 $baseMapping[$mapping[self::FIELD_NAME]] = $mapping ;
             }
         }
