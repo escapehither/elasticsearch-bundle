@@ -23,8 +23,8 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EasyElasticS
  */
 class SearchRequestHandler
 {
-    private const HOST_NAME = 'escape_hither.search_manager.host';
-    private const INDEXES = 'escape_hither.search_manager.indexes';
+    const HOST_NAME = 'escape_hither.search_manager.host';
+    const INDEXES = 'escape_hither.search_manager.indexes';
 
 
     /**
