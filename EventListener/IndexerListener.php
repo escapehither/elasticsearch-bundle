@@ -26,8 +26,8 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 class IndexerListener
 {
     private $container;
-    private const INDEX_NAME = 'index_name';
-    private const FIELD_NAME = 'fieldName';
+    const INDEX_NAME = 'index_name';
+    const FIELD_NAME = 'fieldName';
 
     /**
      * Index Listener Constructor.
