@@ -19,15 +19,38 @@ class DocumentHandlerTest extends \PHPUnit_Framework_TestCase
         $data = new DataTest();
         $data->setName('alain');
         $data->setAge(4);
-        $documentHandler = new DocumentHandler($data,['type'=>'test']);
+        $config = [
+        "entity" => "EscapeHither\SearchManagerBundle\Tests\Utils\DataTest",
+        "index_name" => "index_test",
+        "type" => "data_test",
+        "facets" => [
+                "tags" => [
+                    "categories" => [
+                        "include" => []
+                    ]
+                ],
+                "tags_relation" => [
+                    "offer.seller.id" =>  []
+                ],
+                "ranges" => [
+                    "age" => [
+                        "field_name" => "age",
+                        "display_name" => "age",
+                        "tag_type" => "price",
+                    ]
+                ],
+                "dates" => []
+            ]
+        ];
+        
+        $documentHandler = new DocumentHandler($data, $config);
         $document = $documentHandler->createDocument();
         $result = [
           'name'=>'alain',
           'age'=>4,
-          'sportsman'=>NULL,
+          'sportsman'=>null,
         ];
+
         $this->assertEquals($result, $document->getField());
-
-
     }
 }
