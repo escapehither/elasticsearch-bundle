@@ -25,6 +25,7 @@ class SearchRequestHandler
 {
     const HOST_NAME = 'escape_hither.search_manager.host';
     const INDEXES = 'escape_hither.search_manager.indexes';
+    const FILTERS = 'filters';
 
 
     /**
@@ -79,8 +80,9 @@ class SearchRequestHandler
     /**
      * Add links.
      *
-     * @param [type] $ref
-     * @param [type] $url
+     * @param string $ref
+     * @param string $url
+     *
      * @return void
      */
     public function addLink($ref, $url)
@@ -106,13 +108,13 @@ class SearchRequestHandler
         }
         $parameter = $this->request->query->all();
 
-        if (!empty($parameter['filters'])) {
-            $facetDispatched = $facetProvider->dispatchFilter($parameter['filters']);
+        if (!empty($parameter[self::FILTERS])) {
+            $facetDispatched = $facetProvider->dispatchFilter($parameter[self::FILTERS]);
             empty($facetDispatched) ? :$searchRequest->addFilter('terms', $facetDispatched);
-            empty($parameter['filters']['date']) ? :$searchRequest->addFilter('term', $parameter['filters']['date']);
-            empty($parameter['filters']['range-date']) ? :$searchRequest->addFilter('range', $parameter['filters']['range-date']);
-            empty($parameter['filters']['range-price']) ? :$searchRequest->addFilter('range', $parameter['filters']['range-price']);
-            $filters = $parameter['filters'];
+            empty($parameter[self::FILTERS]['date']) ? :$searchRequest->addFilter('term', $parameter[self::FILTERS]['date']);
+            empty($parameter[self::FILTERS]['range-date']) ? :$searchRequest->addFilter('range', $parameter[self::FILTERS]['range-date']);
+            empty($parameter[self::FILTERS]['range-price']) ? :$searchRequest->addFilter('range', $parameter[self::FILTERS]['range-price']);
+            $filters = $parameter[self::FILTERS];
         }
 
         $aggs = [];
@@ -148,7 +150,7 @@ class SearchRequestHandler
                     'string' => $this->requestParameterHandler->getString(),
                     'facets' => $facets,
                     'facetTags' => $facetTags,
-                    'filters' => $filters,
+                    self::FILTERS => $filters,
                     'sort' => 'default',
                     ];
         }
@@ -170,6 +172,7 @@ class SearchRequestHandler
      * Get the pagination links.
      *
      * @param Pagerfanta $pagerFanta
+     *
      * @return void
      */
     private function getLinks(Pagerfanta $pagerFanta)

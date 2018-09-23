@@ -8,23 +8,24 @@
  * Time: 17:25
  */
 
-namespace EscapeHither\SearchManagerBundle\Tests\Utils;
+namespace EscapeHither\SearchManagerBundle\Tests\Component;
+
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\SearchRequest;
 
 class SearchRequestTest extends \PHPUnit_Framework_TestCase
 {
     public function testGenerateRequest()
     {
-        $result ['body']['query']['filtered']['query']['query_string']['query'] = '*';
+        $result['body']['query']['bool']['must']['query_string']['query'] = '*';
         $request = new SearchRequest();
         $this->assertEquals($result, $request->generateRequest());
     }
-    public function testAddFilterTerm(){
+    public function testAddFilter()
+    {
         $request['term'][]['term']= ['field_one'=>'value'];
-        $result['body']['query']['filtered']['query']['bool']['must'][] = $request['term'];
+        $result['body']['query']['bool']['filter'][] = $request['term'];
         $request = new SearchRequest();
-        $request->addFilter('term', ['field_one'=>'value'] );
+        $request->addFilter('term', ['field_one'=>'value']);
         $this->assertEquals($result, $request->generateRequest());
     }
-
 }

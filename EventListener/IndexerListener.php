@@ -14,18 +14,15 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
-use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * Index delete and update Es Document.
  * Class IndexerListener
- * @package EscapeHither\SearchManagerBundle\EventListener
  */
 class IndexerListener
 {
-    private $container;
     const INDEX_NAME = 'index_name';
     const FIELD_NAME = 'fieldName';
 
@@ -84,8 +81,10 @@ class IndexerListener
     }
 
     /**
-     * @param $class
-     * @param $object
+     * Index a document.
+     *
+     * @param string $class
+     * @param mixed  $object
      */
     protected function indexDocument($class, $object)
     {
@@ -108,7 +107,10 @@ class IndexerListener
     }
 
     /**
-     * @param $indexName
+     * Get index.
+     *
+     * @param string $indexName
+     *
      * @return Index
      */
     protected function getIndex($indexName)
@@ -118,8 +120,12 @@ class IndexerListener
 
 
     /**
-     * @param $entity
+     * Get entity metadata field mappings
+     *
+     * @param mixed $entity
+     *
      * @return array
+     *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
     protected function getEntityMetadataFieldMappings($entity)

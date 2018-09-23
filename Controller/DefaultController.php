@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the Genia package.
+ * (c) Georden Gaël LOUZAYADIO
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ * Date: 28/01/17
+ * Time: 19:35
+ */
 
 namespace EscapeHither\SearchManagerBundle\Controller;
 
@@ -22,11 +30,11 @@ class DefaultController extends Controller
      * Search action.
      *
      * @param Request $request
+     *
      * @return void
      */
     public function searchAction(Request $request)
     {
-
         $requestParameterHandler = $this->getRequestParameterHandler();
         $format = $requestParameterHandler->getFormat();
         // ADD Check if the user have authorisation before proceeding from the request.
@@ -40,6 +48,8 @@ class DefaultController extends Controller
     }
 
     /**
+     * Get the request parameter handler.
+     *
      * @return \EscapeHither\CrudManagerBundle\Services\RequestParameterHandler
      */
     protected function getRequestParameterHandler()

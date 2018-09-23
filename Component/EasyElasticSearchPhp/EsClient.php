@@ -15,8 +15,6 @@ use Elasticsearch\Client;
 
 /**
  * Class EsClient
- *
- * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class EsClient
 {
@@ -53,12 +51,14 @@ class EsClient
     /**
      * Get the settings.
      *
+     * @param array $config
+     *
      * @return array
      */
-    public function getSettings()
+    public function getSettings($config = [])
     {
         if ($this->getHealth()) {
-            return $this->client->indices()->getSettings();
+            return $this->client->indices()->getSettings($config);
         }
 
         return [];
@@ -85,7 +85,7 @@ class EsClient
      */
     public function deleteIndex(Index $index)
     {
-        return $this->client->indices()->delete($index->getName());
+        return $this->client->indices()->delete(['index' => $index->getName()]);
     }
 
     /**
@@ -99,9 +99,9 @@ class EsClient
     {
         if (isset($this->settings[$index->getName()])) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -145,9 +145,11 @@ class EsClient
     {
         $params['index'] = $index->getName();
         $params['type'] = $document->getType();
-        if ($document->getId() != null) {
+
+        if (null !== $document->getId()) {
             $params['id'] = $document->getId();
         }
+
         $params['body'] = $document->getField();
 
         return $this->client->index($params);
@@ -190,12 +192,14 @@ class EsClient
     }
 
      /**
+     * Build the client.
+     *
      * @param null $hosts
+     *
      * @return Client
      */
     protected static function clientBuild($hosts = null)
     {
-        // If there ist host settings.
         if (!empty($hosts)) {
             $client = ClientBuilder::create()->setHosts(['host' => $hosts])->build();
         } else {

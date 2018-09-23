@@ -12,7 +12,6 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Interface SearchReQuestInterface
- * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 interface SearchReQuestInterface
 {

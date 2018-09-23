@@ -12,7 +12,6 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Class Document
- * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class Document
 {

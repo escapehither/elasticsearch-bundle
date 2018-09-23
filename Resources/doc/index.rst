@@ -9,9 +9,9 @@ Compatible with Elasticsearch 5 and 6. It requires Symfony 3 or 4. When using
 
 The following table shows the compatibilities of different versions of the bundle.
 
-| Es search Manager                                                                       | Elastic Seach php | Elasticsearch | Symfony    | PHP   |
-| --------------------------------------------------------------------------------------- | ------------------| ------------- | ---------- | ----- |
-| [5.x]                                                                                   | ^5.2\|^6          | 5.\*\|6.\*    | ^3.2\|^4   | >=5.6 |
+| Es search Manager        | Elastic Seach php | Elasticsearch | Symfony    | PHP   |
+| -------------------------| ------------------| ------------- | ---------- | ----- |
+| [5.x]                    | ^5.2\|^6          | 5.\*\|6.\*    | ^3.2\|^4   | >=5.6 |
 
 Step 1: Download the Bundle
 ---------------------------
@@ -137,7 +137,7 @@ If you want to index your resource, add in your config file.
                     updatedAt:
                         field_name: updatedAt
                         display_name: date two
-                        tag_type: terms
+                        tag_type: terms    
                 ranges:
                     createddAt:
                         field_name: createddAt
