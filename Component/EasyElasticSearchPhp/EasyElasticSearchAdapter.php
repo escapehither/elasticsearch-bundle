@@ -14,7 +14,6 @@ use Pagerfanta\Adapter\AdapterInterface;
 
 /**
  * Class EasyElasticSearchAdapter
- * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class EasyElasticSearchAdapter implements AdapterInterface
 {

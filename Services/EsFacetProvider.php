@@ -57,7 +57,7 @@ class EsFacetProvider
 
                         foreach ($this->facets[$keyFacet] as $keyElement => $valueFacet) {
                             foreach ($aggragation as $keyAggregation => $aggregationValue) {
-                                if (strtolower($valueFacet['key']) == $aggregationValue['key']) {
+                                if (strtolower($valueFacet['key']) === $aggregationValue['key']) {
                                     $this->facets[$keyFacet][$keyElement]['doc_count'] = $aggregationValue['doc_count'];
                                 }
                             }
@@ -100,7 +100,6 @@ class EsFacetProvider
      */
     public function getFacetsTag()
     {
-
         $this->facetTags['taxons_four'] = [
             "display_name" => "AVAILABLE FOR NOTTURNO",
             "field_name" => "field_concert_notturno",
@@ -186,12 +185,12 @@ class EsFacetProvider
     }
 
     /**
-     * @param $type
-     * @param $field
-     * @param string $index
+     * Get serach list value.
+     *
+     * @param array $config
      * @param array $list
      *
-     * @return array
+     * @return void
      */
     private function getSearchListValue($config, $list = [])
     {
@@ -226,8 +225,10 @@ class EsFacetProvider
     }
 
     /**
-     * @param $results
-     * @param $field
+     * Get bucket key
+     *
+     * @param array  $results
+     * @param string $field
      *
      * @return array
      */
@@ -245,9 +246,12 @@ class EsFacetProvider
     }
 
     /**
-     * @param $type
-     * @param $field
-     * @return mixed
+     * Get field list values costum.
+     *
+     * @param string $type
+     * @param string $field
+     *
+     * @return array
      */
     private function getFieldListValuesCustom($type, $field)
     {
