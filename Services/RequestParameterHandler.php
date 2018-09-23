@@ -39,7 +39,6 @@ class RequestParameterHandler extends RequestHandlerUtils
     protected $securityConfig;
     protected $routeName;
     protected $actionName;
-    protected $parameters;
     protected $paginationConfig;
 
     /**
@@ -75,7 +74,7 @@ class RequestParameterHandler extends RequestHandlerUtils
               'searchAction',
             ];
 
-            if ($this->resourceName == "redirect") {
+            if ("redirect" === $this->resourceName) {
                 return;
             }
             if (in_array($attributes['action'], $actionList)) {
@@ -113,7 +112,6 @@ class RequestParameterHandler extends RequestHandlerUtils
             $this->securityConfig = $attributes['security'];
             $this->actionName = $attributes['action'];
             $this->routeName = $attributes['_route'];
-            $this->parameters = $this->getParameters();
         }
     }
 
@@ -171,7 +169,7 @@ class RequestParameterHandler extends RequestHandlerUtils
     {
         $size = 10;
         if (isset($this->paginationConfig['size'])) {
-            $size =  $this->paginationConfig['size'];
+            $size = $this->paginationConfig['size'];
         }
 
         return $size;
@@ -255,36 +253,17 @@ class RequestParameterHandler extends RequestHandlerUtils
         return $this->name;
     }
 
-    public function getRepositoryMethod()
-    {
-        return $this->indexConfig['method'];
-    }
-
-    public function getParameters()
-    {
-        return true;
-        //return $this->request->all();
-    }
-
     /**
      * @return null|string
      */
     public function getString()
     {
         $string = null;
+
         if ($this->request->query->get('string')) {
             $string = $this->request->query->get('string');
         }
 
         return $string;
     }
-
-
-
-
-
-
-
-
-
 }

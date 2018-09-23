@@ -12,7 +12,6 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Class SearchRequest
- * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class SearchRequest implements SearchReQuestInterface
 {
@@ -20,6 +19,8 @@ class SearchRequest implements SearchReQuestInterface
     protected $index;
 
     /**
+     * Generate a request.
+     *
      * @return mixed
      */
     public function generateRequest()
@@ -28,15 +29,16 @@ class SearchRequest implements SearchReQuestInterface
              $this->request['body']['query']['bool']['must']['query_string']['query'] = '*';
 
             return $this->request;
-        } else {
-            return $this->request;
         }
+
+        return $this->request;
     }
 
     /**
      * Add query string.
      *
      * @param string $string The query string.
+     *
      * @return void
      */
     public function setString($string)
@@ -63,7 +65,7 @@ class SearchRequest implements SearchReQuestInterface
             //$this->request['body']['query']['filtered']['query']['bool']['must'][][][$type] = [$fieldName => $value];
             // After.
             if ("range" === $type) {
-                if ($value['gte'] != "" and $value['lte'] != "") {
+                if ("" !== $value['gte'] and "" !== $value['lte']) {
                     $this->request['body']['query']['bool']['filter'][][][$type] = [$fieldName => $value];
                 }
             } else {
@@ -97,11 +99,11 @@ class SearchRequest implements SearchReQuestInterface
      */
     public function setFrom($value)
     {
-        if (is_int($value)) {
-            $this->request['from'] = $value;
-        } else {
+        if (!is_int($value)) {
             throw new \LogicException('from parameter must be an integer');
         }
+
+        $this->request['from'] = $value;        
     }
 
     /**
@@ -136,13 +138,20 @@ class SearchRequest implements SearchReQuestInterface
      */
     public function setSize($value)
     {
-        if (is_int($value)) {
-            $this->request['size'] = $value;
-        } else {
+        if (!is_int($value)) {
             throw new \LogicException('size parameter must be an integer');
         }
+        
+        $this->request['size'] = $value;
     }
 
+    /**
+     * Check filter type.
+     *
+     * @param string $type
+     *
+     * @return void
+     */
     protected function checkTypeFilter($type)
     {
       // TODO check  the filter.

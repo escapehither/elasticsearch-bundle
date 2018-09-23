@@ -16,7 +16,10 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 interface IndexInterface
 {
     /**
+     * Search over an index.
+     *
      * @param SearchReQuestInterface $searchRequest
+     *
      * @return array
      */
     public function search(SearchReQuestInterface $searchRequest);

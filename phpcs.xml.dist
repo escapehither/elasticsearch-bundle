@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="Symfony CodingStandard" namespace="vendor/escapestudios/symfony2-coding-standard/">
+<file>.</file>
+ <exclude-pattern>*/Notready/*</exclude-pattern>
+ <exclude-pattern>*/vendor/*</exclude-pattern>
+ <exclude-pattern>*/Tests/*</exclude-pattern>
+ <rule ref="Symfony">
+        
+</rule>
+
+</ruleset>

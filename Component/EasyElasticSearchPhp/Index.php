@@ -12,7 +12,6 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Class Index
- * @package EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp
  */
 class Index implements IndexInterface
 {
@@ -39,11 +38,25 @@ class Index implements IndexInterface
     {
         return $this->name;
     }
-
+    /**
+     * Get the index settings
+     */
+    public function getSettings()
+    {
+        try {
+            if ($this->client->getHealth()) {
+                $this->client->getSettings(['index' => $this->name]);
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage().''.$e->getFile().''.$e->getLine(), 0);
+        }
+    }
 
     /**
      * Create a new index with mapping if set
+     *
      * @param array $mapping
+     *
      * @return array|mixed
      */
     public function create($mapping = [])
@@ -63,19 +76,33 @@ class Index implements IndexInterface
             }
         } catch (\Exception $e) {
             //TODO HANDLE ERROR LOG
-            error_log($e->getMessage(), 0);
+            error_log($e->getMessage().''.$e->getFile().''.$e->getLine(), 0);
         }
 
         return $response;
     }
 
     /**
+     * Delete index
+     */
+    public function delete()
+    {
+        try {
+            if ($this->client->getHealth()) {
+                $this->client->deleteIndex($this);
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage().''.$e->getFile().''.$e->getLine(), 0);
+        }
+    }
+
+    /**
+     * Index a document.
+     *
      * @param \EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document $document
      */
     public function indexDocument(Document $document)
     {
-
-
         try {
             if ($this->client->getHealth()) {
                 // Check if index exist before proceeding.
@@ -102,11 +129,13 @@ class Index implements IndexInterface
             }
         } catch (\Exception $e) {
             //TODO HANDLE ERROR LOG
-            error_log($e->getMessage(), 0);
+            error_log($e->getMessage().''.$e->getFile().''.$e->getLine(), 0);
         }
     }
 
     /**
+     * Delete a document.
+     *
      * @param string $type The document type.
      * @param mixed  $id   The document id.
      */
@@ -123,7 +152,7 @@ class Index implements IndexInterface
                 }
             }
         } catch (\Exception $e) {
-            error_log($e->getMessage(), 0);
+            error_log($e->getMessage().''.$e->getFile().''.$e->getLine(), 0);
         }
     }
 
@@ -137,11 +166,11 @@ class Index implements IndexInterface
      */
     public function getDocument($type, $id)
     {
-
         $params['index'] = $this->name;
         $params['type'] = $type;
         $params['id'] = $id;
         $response = [];
+
         try {
             if ($this->client->getHealth()) {
                 if ($this->client->ifIndexExist($this)) {
@@ -149,9 +178,9 @@ class Index implements IndexInterface
                 }
             }
         } catch (\Exception $e) {
-            error_log($e->getMessage(), 0);
+            error_log($e->getMessage().''.$e->getFile().''.$e->getLine(), 0);
         }
- 
+
         return $response;
     }
 
@@ -172,7 +201,7 @@ class Index implements IndexInterface
      *
      * @return array
      */
-    public function getDefaultParameters($mapping)
+    public function getDefaultParameters($mapping = [])
     {
         $params = ['index' => $this->name];
         $params['body'] = [
@@ -196,7 +225,10 @@ class Index implements IndexInterface
     }
 
     /**
+     * Search over an index.
+     *
      * @param SearchReQuestInterface $searchRequest
+     *
      * @return array
      */
     public function search(SearchReQuestInterface $searchRequest)
@@ -212,7 +244,7 @@ class Index implements IndexInterface
         try {
             $results = $this->client->search($params);
         } catch (\Exception $e) {
-            error_log($e->getMessage(), 0);
+            error_log($e->getMessage().''.$e->getFile().''.$e->getLine(), 0);
         }
 
         return $results;

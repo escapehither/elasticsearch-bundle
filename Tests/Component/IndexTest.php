@@ -8,7 +8,8 @@
  * Time: 23:16
  */
 
-namespace EscapeHither\SearchManagerBundle\Tests\Utils;
+namespace EscapeHither\SearchManagerBundle\Tests\Component;
+
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 
@@ -23,15 +24,13 @@ class IndexTest extends \PHPUnit_Framework_TestCase
               'analyzer' => [
                 'folding_analyzer' => [
                   'tokenizer' => "standard",
-                  'filter' => ["standard", "asciifolding", "lowercase"],
+                  'filter' => ["standard", "asciifolding", "lowercase","word_delimiter"],
                 ],
               ],
             ],
           ],
         ];
         $index = new Index('index_test', new EsClient());
-        $this->assertEquals($params,$index->getDefaultParameters([]));
-
+        $this->assertEquals($params, $index->getDefaultParameters());
     }
-
 }

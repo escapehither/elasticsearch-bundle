@@ -24,9 +24,8 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 
 /**
- *  Document Creator.
+ * Document Creator.
  * Class DocumentHandler
- * @package EscapeHither\SearchManagerBundle\Utils
  */
 class DocumentHandler
 {
@@ -34,10 +33,10 @@ class DocumentHandler
     private $object;
 
     /**
-     * @param $object
-     * @param $config
+     * @param mixed $object
+     * @param array $config
      */
-    public function __construct($object,$config)
+    public function __construct($object, $config)
     {
         $this->object = $object;
         $this->configuration = $config;
@@ -96,7 +95,7 @@ class DocumentHandler
     /**
      * @return array
      */
-    public function CreateDocumentFields()
+    public function createDocumentFields()
     {
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
@@ -126,12 +125,12 @@ class DocumentHandler
      */
     public function createDocument()
     {
-
-        return new  Document($this->configuration['type'], $this->CreateDocumentFields());
+        return new  Document($this->configuration['type'], $this->createDocumentFields());
     }
 
     /**
-     * @param $fieldName
+     * @param string $fieldName
+     *
      * @return array
      */
     private function getTagInclusion($fieldName)

@@ -9,11 +9,24 @@
  */
 
 namespace EscapeHither\SearchManagerBundle\Tests\Utils;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-
-class DataTest {
+/**
+ * data test.
+ */
+class DataTest
+{
+    /**
+     * @Groups({"index"})
+     */
     private $age;
+    /**
+     * @Groups({"index"})
+     */
     private $name;
+    /**
+     * @Groups({"index"})
+     */
     private $sportsman;
 
     // Getters
@@ -48,5 +61,4 @@ class DataTest {
     {
         $this->sportsman = $sportsman;
     }
-
 }
