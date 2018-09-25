@@ -45,6 +45,7 @@ class IndexerListener
      */
     public function postPersist(LifecycleEventArgs $args)
     {
+        die();
         $object = $args->getEntity();
         $class = get_class($object);
 
@@ -58,9 +59,10 @@ class IndexerListener
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
+        
         $object = $args->getEntity();
         $class = get_class($object);
-
+        dump($class);
         if ($this->indexHasParameter($class)) {
             $this->indexDocument($class, $object);
         }
@@ -93,11 +95,10 @@ class IndexerListener
         $document = $documentHandler->CreateDocument();
 
         $fieldMappings = $this->getEntityMetadataFieldMappings($class);
-        $mapping[$document->getType()] = [];
 
         foreach ($fieldMappings as $key => $value) {
             if ('string' === $value['type']) {
-                $mapping[$document->getType()]['properties'][$value[self::FIELD_NAME]] = $this->getDefaultStringAnalyzer();
+                $mapping[$document->getType()]['properties'][$key] = $this->getDefaultStringAnalyzer();
             }
         }
 
@@ -140,8 +141,8 @@ class IndexerListener
             $mappingAssociation = $metadataAssociation->fieldMappings;
 
             foreach ($mappingAssociation as $keyMapping => $mapping) {
-                $mapping[] = $fieldAssociation.'.'.$mapping[self::FIELD_NAME];
-                $baseMapping[$mapping[self::FIELD_NAME]] = $mapping ;
+                $name = $fieldAssociation.'.'.$mapping[self::FIELD_NAME];
+                $baseMapping[$name] = $mapping ;
             }
         }
 

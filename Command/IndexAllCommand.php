@@ -80,7 +80,7 @@ class IndexAllCommand extends ContainerAwareCommand
             }
         }
 
-        $output->writeln('The Index : '.$indexName.' successfully delete');
+        $output->writeln('The content of index : '.$indexName.' successfully indexed');
     }
 
     /**
@@ -128,11 +128,10 @@ class IndexAllCommand extends ContainerAwareCommand
         $document = $documentHandler->CreateDocument();
 
         $fieldMappings = $this->getEntityMetadataFieldMappings($class);
-        $mapping[$document->getType()] = [];
 
         foreach ($fieldMappings as $key => $value) {
             if ('string' === $value['type']) {
-                $mapping[$document->getType()]['properties'][$value[self::FIELD_NAME]] = $this->getDefaultStringAnalyzer();
+                $mapping[$document->getType()]['properties'][$key] = $this->getDefaultStringAnalyzer();
             }
         }
 
@@ -174,8 +173,8 @@ class IndexAllCommand extends ContainerAwareCommand
             $mappingAssociation = $metadataAssociation->fieldMappings;
 
             foreach ($mappingAssociation as $keyMapping => $mapping) {
-                $mapping[] = $fieldAssociation.'.'.$mapping[self::FIELD_NAME];
-                $baseMapping[$mapping[self::FIELD_NAME]] = $mapping ;
+                $name = $fieldAssociation.'.'.$mapping[self::FIELD_NAME];
+                $baseMapping[$name] = $mapping ;
             }
         }
 
