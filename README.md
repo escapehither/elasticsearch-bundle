@@ -61,19 +61,23 @@ This bundle use [The Symfony Serializer Component.](https://symfony.com/doc/curr
 Suppose you have a a resource class, add Annotation groups.
 Only attributes in the groups index will be normalize.
 
-
-
 ```php
 namespace Acme;
 
 use Symfony\Component\Serializer\Annotation\Groups;
+use EscapeHither\SearchManagerBundle\Entity\IndexableEntityInterface;
 
-class Product
+class Product implements IndexableEntityInterface
 {
     /**
      * @Groups({"index"})
      */
-    public $foo;
+    public $bar;
+
+    /**
+     * @var \DateTime $updatedAt
+     */
+    public $updatedAt;
 
     /**
      * @Groups({"index"})
@@ -81,6 +85,12 @@ class Product
     public function getBar() // is* methods are also supported
     {
         return $this->bar;
+    }
+    /**
+     * This method tells doctrine to always track this entity.
+     */
+    public function trackMe(){
+        $this->updatedAt = new \DateTime('now');
     }
 
     // ...

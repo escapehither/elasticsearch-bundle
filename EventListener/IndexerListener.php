@@ -1,25 +1,29 @@
 <?php
 /**
  * This file is part of the search bundle manager package.
- * (c) Georden Gaël LOUZAYADIO
+ * (c) Georden Gaël LOUZAYADIO <georden@escapehither.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * Date: 01/11/16
- * Time: 22:58
  */
 
 namespace EscapeHither\SearchManagerBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use EscapeHither\SearchManagerBundle\Entity\IndexableEntityInterface;
 
 /**
  * Index delete and update Es Document.
  * Class IndexerListener
+ * 
+ * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class IndexerListener
 {
@@ -45,7 +49,6 @@ class IndexerListener
      */
     public function postPersist(LifecycleEventArgs $args)
     {
-        die();
         $object = $args->getEntity();
         $class = get_class($object);
 
@@ -61,10 +64,23 @@ class IndexerListener
     {
         
         $object = $args->getEntity();
+        
         $class = get_class($object);
-        dump($class);
         if ($this->indexHasParameter($class)) {
             $this->indexDocument($class, $object);
+        }
+    }
+   
+     /**
+     * {@inheritDoc}
+     */
+    public function postLoad(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+        $class = get_class($entity);
+        
+        if ($this->indexHasParameter($class) && $entity instanceof IndexableEntityInterface ) {
+            $entity->trackMe();
         }
     }
 
@@ -119,7 +135,6 @@ class IndexerListener
         return $index = new Index($indexName, new EsClient($this->host));
     }
 
-
     /**
      * Get entity metadata field mappings
      *
@@ -169,6 +184,7 @@ class IndexerListener
             ],
         ];
     }
+
     /**
      * Get parameter Class.
      *
