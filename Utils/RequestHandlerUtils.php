@@ -1,19 +1,20 @@
 <?php
-
 /**
- * This file is part of the Genia package.
- * (c) Georden Gaël LOUZAYADIO
+ * This file is part of the search bundle manager package.
+ * (c) Georden Gaël LOUZAYADIO <georden@escapehither.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * Date: 27/06/17
- * Time: 21:54
  */
+
 namespace EscapeHither\SearchManagerBundle\Utils;
 
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Request Handler utils.
+ * 
+ * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class RequestHandlerUtils
 {
@@ -226,7 +227,6 @@ class RequestHandlerUtils
 
         return $config;
     }
-
 
     /**
      * Get The form Configuration.

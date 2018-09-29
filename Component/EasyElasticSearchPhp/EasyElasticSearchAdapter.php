@@ -1,11 +1,10 @@
 <?php
 /**
- * This file is part of the search-manager-bundle package.
- * (c) Georden Gaël LOUZAYADIO
+ * This file is part of the search bundle manager package.
+ * (c) Georden Gaël LOUZAYADIO <georden@escapehither.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * Date: 19/10/17
- * Time: 19:50
  */
 
 namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
@@ -14,6 +13,8 @@ use Pagerfanta\Adapter\AdapterInterface;
 
 /**
  * Class EasyElasticSearchAdapter
+ * 
+ * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class EasyElasticSearchAdapter implements AdapterInterface
 {

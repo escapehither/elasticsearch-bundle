@@ -1,13 +1,11 @@
 <?php
 /**
- * This file is part of the Genia package.
- * (c) Georden Gaël LOUZAYADIO
+ * This file is part of the search bundle manager package.
+ * (c) Georden Gaël LOUZAYADIO <georden@escapehither.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * Date: 20/11/16
- * Time: 14:16
  */
-
 
 namespace EscapeHither\SearchManagerBundle\Services;
 
@@ -17,6 +15,8 @@ use EscapeHither\SearchManagerBundle\Utils\RequestHandlerUtils;
 
 /**
  * Search request Parameter Handler.
+ * 
+ * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class RequestParameterHandler extends RequestHandlerUtils
 {
