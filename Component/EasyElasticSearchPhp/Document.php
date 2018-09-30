@@ -11,7 +11,7 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Class Document
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class Document

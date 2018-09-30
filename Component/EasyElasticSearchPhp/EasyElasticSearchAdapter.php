@@ -13,7 +13,7 @@ use Pagerfanta\Adapter\AdapterInterface;
 
 /**
  * Class EasyElasticSearchAdapter
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class EasyElasticSearchAdapter implements AdapterInterface

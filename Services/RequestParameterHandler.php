@@ -15,7 +15,7 @@ use EscapeHither\SearchManagerBundle\Utils\RequestHandlerUtils;
 
 /**
  * Search request Parameter Handler.
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class RequestParameterHandler extends RequestHandlerUtils

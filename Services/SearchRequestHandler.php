@@ -19,7 +19,7 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EasyElasticS
 
 /**
  * The search request handler.
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class SearchRequestHandler

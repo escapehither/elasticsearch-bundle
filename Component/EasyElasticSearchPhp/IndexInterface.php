@@ -10,7 +10,7 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Index interface.
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 interface IndexInterface

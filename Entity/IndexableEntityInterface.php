@@ -20,8 +20,7 @@ interface IndexableEntityInterface
     /**
      * Get the propety to update
      *
-     * @return string 
+     * @return string
      */
     public function trackMe();
-
 }

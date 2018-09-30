@@ -15,7 +15,7 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
 
 /**
  * The facet provider.
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class EsFacetProvider

@@ -25,7 +25,7 @@ use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 /**
  * Document Creator.
  * Class DocumentHandler
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class DocumentHandler

@@ -22,7 +22,7 @@ use EscapeHither\SearchManagerBundle\Entity\IndexableEntityInterface;
 /**
  * Index delete and update Es Document.
  * Class IndexerListener
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class IndexerListener
@@ -62,15 +62,14 @@ class IndexerListener
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
-        
         $object = $args->getEntity();
-        
         $class = get_class($object);
+
         if ($this->indexHasParameter($class)) {
             $this->indexDocument($class, $object);
         }
     }
-   
+
      /**
      * {@inheritDoc}
      */
@@ -78,8 +77,8 @@ class IndexerListener
     {
         $entity = $args->getEntity();
         $class = get_class($entity);
-        
-        if ($this->indexHasParameter($class) && $entity instanceof IndexableEntityInterface ) {
+
+        if ($this->indexHasParameter($class) && $entity instanceof IndexableEntityInterface) {
             $entity->trackMe();
         }
     }

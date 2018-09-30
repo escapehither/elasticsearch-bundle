@@ -11,7 +11,7 @@ namespace EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp;
 
 /**
  * Class SearchRequest
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class SearchRequest implements SearchReQuestInterface
@@ -104,7 +104,7 @@ class SearchRequest implements SearchReQuestInterface
             throw new \LogicException('from parameter must be an integer');
         }
 
-        $this->request['from'] = $value;        
+        $this->request['from'] = $value;
     }
 
     /**
@@ -142,7 +142,7 @@ class SearchRequest implements SearchReQuestInterface
         if (!is_int($value)) {
             throw new \LogicException('size parameter must be an integer');
         }
-        
+
         $this->request['size'] = $value;
     }
 

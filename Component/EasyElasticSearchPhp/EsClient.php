@@ -14,7 +14,7 @@ use Elasticsearch\Client;
 
 /**
  * Class EsClient
- * 
+ *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
 class EsClient
