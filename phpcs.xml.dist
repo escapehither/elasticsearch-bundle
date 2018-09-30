@@ -4,7 +4,7 @@
  <exclude-pattern>*/Notready/*</exclude-pattern>
  <exclude-pattern>*/vendor/*</exclude-pattern>
  <exclude-pattern>*/Tests/*</exclude-pattern>
- <rule ref="Symfony">
+ <rule ref="Symfony2">
         
 </rule>
 
