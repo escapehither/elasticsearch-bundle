@@ -46,10 +46,10 @@ class EsFacetProvider
         empty($this->indexConfig['facets']['tags_relation']) ? :$this->addFacetTagRelation();
         empty($this->indexConfig['facets']['dates']) ? :$this->addFacetsDate();
         empty($this->indexConfig['facets']['ranges']) ? :$this->addFacetsRange();
-        
+
         if (!empty($results)) {
             $values = $results['hits']['hits'];
-            
+
             foreach ($this->facetTags as $keyFacet => $value) {
                 if (!empty($value['field_name'])) {
                     if (!empty($results['aggregations'][$value['field_name']])) {
@@ -125,7 +125,7 @@ class EsFacetProvider
             //TODO add $keyBuckets.
             $taxonomy = $this->getSearchListValue($relation);
             $this->facets['taxons_'.$keyRelation] = [];
-            
+
             if ($taxonomy) {
                 foreach ($taxonomy as $key => $taxon) {
                     $currentTaxon = $taxon;

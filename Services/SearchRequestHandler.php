@@ -145,7 +145,7 @@ class SearchRequestHandler
         $results = $pagerFanta->getCurrentPageResults();
         $facets = $facetProvider->getFacets($results);
         $facetTags = $facetProvider->getFacetsTag();
-    
+
         if ('html' === $this->requestParameterHandler->getFormat()) {
             return  ['data' => $pagerFanta,
                     'string' => $this->requestParameterHandler->getString(),
