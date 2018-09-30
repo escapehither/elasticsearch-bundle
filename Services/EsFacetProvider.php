@@ -20,7 +20,6 @@ use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
  */
 class EsFacetProvider
 {
-
     private $indexConfig;
     private $facets = [];
     private $host;
@@ -47,10 +46,10 @@ class EsFacetProvider
         empty($this->indexConfig['facets']['tags_relation']) ? :$this->addFacetTagRelation();
         empty($this->indexConfig['facets']['dates']) ? :$this->addFacetsDate();
         empty($this->indexConfig['facets']['ranges']) ? :$this->addFacetsRange();
-
+        
         if (!empty($results)) {
             $values = $results['hits']['hits'];
-
+            
             foreach ($this->facetTags as $keyFacet => $value) {
                 if (!empty($value['field_name'])) {
                     if (!empty($results['aggregations'][$value['field_name']])) {
@@ -58,7 +57,7 @@ class EsFacetProvider
 
                         foreach ($this->facets[$keyFacet] as $keyElement => $valueFacet) {
                             foreach ($aggragation as $keyAggregation => $aggregationValue) {
-                                if (strtolower($valueFacet['key']) === $aggregationValue['key']) {
+                                if ($valueFacet['key'] === $aggregationValue['key']) {
                                     $this->facets[$keyFacet][$keyElement]['doc_count'] = $aggregationValue['doc_count'];
                                 }
                             }
@@ -80,11 +79,13 @@ class EsFacetProvider
     public function dispatchFilter($paramFilter)
     {
         $facet = [];
+
         foreach ($this->indexConfig['facets']['tags_relation'] as $keyRelation => $relation) {
             $facetValues = array_keys($this->getSearchListValue($relation));
 
             foreach ($paramFilter as $key => $value) {
                 $index = key($value);
+
                 if (in_array($value[$index], $facetValues)) {
                     $facet[$keyRelation][] = strtolower($value[$index]);
                 }
@@ -119,13 +120,12 @@ class EsFacetProvider
      */
     private function addFacetTagRelation()
     {
-
         foreach ($this->indexConfig['facets']['tags_relation'] as $keyRelation => $relation) {
             //$taxonomy = $this->getSearchListValue('offer.seller.commercialName.keyword', $this->getBucketKey($results, 'seller'));
             //TODO add $keyBuckets.
             $taxonomy = $this->getSearchListValue($relation);
             $this->facets['taxons_'.$keyRelation] = [];
-
+            
             if ($taxonomy) {
                 foreach ($taxonomy as $key => $taxon) {
                     $currentTaxon = $taxon;
@@ -135,6 +135,7 @@ class EsFacetProvider
                         "doc_count" => 0,
                     ];
                 }
+
                 $this->facetTags['taxons_'.$keyRelation] = [
                     "display_name" => $relation['display_name'],
                     "field_name" => $keyRelation,
@@ -195,12 +196,12 @@ class EsFacetProvider
      */
     private function getSearchListValue($config, $list = [])
     {
-
         $searchRequest = new SearchRequest();
         $searchRequest->setSize(1000);
         $searchRequest->setType($config['type']);
         $index = new Index($config['index_name'], new EsClient($this->host));
         $results = [];
+        $taxonomy = [];
 
         if (empty($list)) {
             $results = $index->search($searchRequest);
@@ -209,8 +210,6 @@ class EsFacetProvider
             $parameter['body'] = $this->getBodyListSearch($list);
             //$results = $client->search($Parameter);
         }
-
-        $taxonomy = [];
 
         if ($results) {
             $values = $results['hits']['hits'];

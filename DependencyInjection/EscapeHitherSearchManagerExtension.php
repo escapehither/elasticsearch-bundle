@@ -39,9 +39,9 @@ class EscapeHitherSearchManagerExtension extends Extension
             foreach ($config['indexes'] as $key => $value) {
                 //TODO CHECK IF EXIST.
                 $indexes[$value['entity']] = $value;
-
-                if (!empty($value['tags_relation'])) {
-                    foreach ($value['tags_relation'] as $keyTag => $tag) {
+ 
+                if (!empty($value['facets']['tags_relation'])) {
+                    foreach ($value['facets']['tags_relation'] as $keyTag => $tag) {
                         $indexes[$tag['entity']] = $tag;
                     }
                 }

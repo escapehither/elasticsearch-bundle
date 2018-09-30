@@ -102,11 +102,12 @@ class SearchRequestHandler
         $searchRequest->setType($this->resourceType);
         $facetProvider = new EsFacetProvider($this->indexConfig, $this->host);
         $filters = [];
-
         $page = 1;
+
         if (!empty($this->request->query->get('page'))) {
             $page = $this->request->query->get('page');
         }
+
         $parameter = $this->request->query->all();
 
         if (!empty($parameter[self::FILTERS])) {
@@ -140,12 +141,11 @@ class SearchRequestHandler
         $adapter = new EasyElasticSearchAdapter($searchRequest, $index);
         $pagerFanta = new Pagerfanta($adapter);
         $pagerFanta->setCurrentPage($page);
-
         $pagerFanta->setMaxPerPage($this->requestParameterHandler->getPaginationSize());
         $results = $pagerFanta->getCurrentPageResults();
         $facets = $facetProvider->getFacets($results);
         $facetTags = $facetProvider->getFacetsTag();
-
+    
         if ('html' === $this->requestParameterHandler->getFormat()) {
             return  ['data' => $pagerFanta,
                     'string' => $this->requestParameterHandler->getString(),
@@ -197,6 +197,7 @@ class SearchRequestHandler
         if ($pagerFanta->hasNextPage()) {
             $this->addLink('next', $createLinkUrl($pagerFanta->getNextPage()));
         }
+
         if ($pagerFanta->hasPreviousPage()) {
             $this->addLink('prev', $createLinkUrl($pagerFanta->getPreviousPage()));
         }
