@@ -57,6 +57,5 @@ class DocumentHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Document::class, $documentHandler->createDocument());
         $this->assertEquals($result, $documentHandler->createDocumentFields());
         $this->assertEquals( $config, $documentHandler->getConfiguration());
-        $this->assertEquals( $tags, $documentHandler->getTagGenerator());
     }
 }
