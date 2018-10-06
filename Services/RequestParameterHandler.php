@@ -11,16 +11,15 @@ namespace EscapeHither\SearchManagerBundle\Services;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
-use EscapeHither\SearchManagerBundle\Utils\RequestHandlerUtils;
+use EscapeHither\SearchManagerBundle\Utils\AbstractRequestParameterHandler;
 
 /**
  * Search request Parameter Handler.
  *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
-class RequestParameterHandler extends RequestHandlerUtils
+class RequestParameterHandler extends AbstractRequestParameterHandler
 {
-    protected $name;
     protected $bundleName;
     protected $request;
     protected $requestStack;
@@ -92,9 +91,7 @@ class RequestParameterHandler extends RequestHandlerUtils
             // use when call resource configuration parameter.
             $this->resourceServiceName = 'resource.'.$attributes['nameConfig'];
             // The name use for generating the view.
-            $this->resourceViewName = RequestHandlerUtils::generateResourceViewName(
-                $attributes
-            );
+            $this->resourceViewName = $this->generateResourceViewName($attributes);
             // The where is template for the view.
             $this->themePath = $this->generateThemePath($attributes);
             // The bundle name.
@@ -114,7 +111,6 @@ class RequestParameterHandler extends RequestHandlerUtils
             $this->routeName = $attributes['_route'];
         }
     }
-
 
     /**
      * @return mixed
@@ -242,18 +238,13 @@ class RequestParameterHandler extends RequestHandlerUtils
      */
     public function getBundleName()
     {
+        //TODO CHECK if NEEDED
         return $this->bundleName;
     }
 
     /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
+     * Get the request string.
+     *
      * @return null|string
      */
     public function getString()
@@ -265,5 +256,31 @@ class RequestParameterHandler extends RequestHandlerUtils
         }
 
         return $string;
+    }
+
+    /**
+     * Get the current page.
+     *
+     * @return int
+     */
+    public function getCurrentPage()
+    {
+        $page = 1;
+
+        if (!empty($this->request->query->get('page'))) {
+            $page = $this->request->query->get('page');
+        }
+
+        return $page;
+    }
+
+    /**
+     * Get request parameter.
+     *
+     * @return array
+     */
+    public function getRequestParameter()
+    {
+        return $this->request->query->all();
     }
 }

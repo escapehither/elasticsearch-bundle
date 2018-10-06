@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author Georden Gaël LOUZAYADIO <georden@escapehither.com>
  */
-class RequestHandlerUtils
+class AbstractRequestParameterHandler
 {
     const ARGUMENTS = 'arguments';
     const _PAGINATION_ = 'pagination';
@@ -51,7 +51,7 @@ class RequestHandlerUtils
      *
      * @return string A string lowercase with underscore pattern.
      */
-    public static function fromCamelCase($input)
+    public function fromCamelCase($input)
     {
         preg_match_all(
             '!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!',
@@ -75,7 +75,7 @@ class RequestHandlerUtils
      *
      * @return string
      */
-    public static function getRootBundle($paramController)
+    public function getRootBundle($paramController)
     {
         $rootBundle = '';
         for ($i = 0; $i <= count($paramController) - 3; $i++) {
@@ -92,7 +92,7 @@ class RequestHandlerUtils
      *
      * @return string
      */
-    public static function getRootClass($paramController)
+    public function getRootClass($paramController)
     {
         $rootClass = '';
         for ($i = 0; $i <= count($paramController) - 3; $i++) {
@@ -109,7 +109,7 @@ class RequestHandlerUtils
      *
      * @return string
      */
-    public static function generateResourceViewName($attributes)
+    public function generateResourceViewName($attributes)
     {
         if ("indexAction" === $attributes[self::_ACTION_]) {
             $name = $attributes[self::_NAME_].'s';
@@ -128,7 +128,7 @@ class RequestHandlerUtils
      *
      * @return null|string
      */
-    public static function getInfoFromAction(array $attributes, $type)
+    public function getInfoFromAction(array $attributes, $type)
     {
         $actionList = ['index', 'new', 'show', 'edit'];
         $suffix = str_replace('Action', '', $attributes[self::_ACTION_]);
@@ -159,9 +159,9 @@ class RequestHandlerUtils
             $paramController = explode("\\", $controllerLink);
             $controllerAction = $paramController[count($paramController) - 1];
             $controllerActionTab = explode("::", $controllerAction);
-            $attributes[self::_ROOT_CLASS_] = self::getRootClass($paramController);
-            $attributes['rootBundle'] = self::getRootBundle($paramController);
-
+            $attributes[self::_ROOT_CLASS_] = $this->getRootClass($paramController);
+            $attributes['rootBundle'] = $this->getRootBundle($paramController);
+            //TODO CHECK if NEEDED
             if (!empty($paramController)) {
                 $attributes[self::_BUNDLE_] = $paramController[0];
             } else {
@@ -181,21 +181,22 @@ class RequestHandlerUtils
             // The resource name for the template folder.
             $attributes[self::_TEMPLATE_] = strtolower($attributes[self::_RESOURCE_]);
             // The resource name for getting config parameters.
-            $attributes[self::_NAME_CONFIG_] = self::fromCamelCase(
+            $attributes[self::_NAME_CONFIG_] = $this->fromCamelCase(
                 $attributes[self::_RESOURCE_]
             );
+
             if (!empty($controllerActionTab[1])) {
                 $attributes[self::_ACTION_] = $controllerActionTab[1];
             } else {
                 $attributes[self::_ACTION_] = null;
             }
+
             $attributes['_route'] = $this->request->attributes->get('_route');
             $attributes[self::_INDEX_] = $this->getConfig(self::_INDEX_);
             $attributes[self::_PAGINATION_] = $this->getConfig(self::_PAGINATION_);
             $attributes['form'] = $this->getFormConfig();
             $attributes['security'] = $this->getSecurityConfig();
         }
-
 
         return $attributes;
     }
@@ -266,7 +267,7 @@ class RequestHandlerUtils
         } elseif (isset($paramTemplate)) {
             return $paramTemplate;
         } else {
-            $path = self::getInfoFromAction($attributes, 'path');
+            $path = $this->getInfoFromAction($attributes, 'path');
         }
 
         return $path;

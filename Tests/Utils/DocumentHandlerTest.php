@@ -10,6 +10,7 @@
 namespace EscapeHither\SearchManagerBundle\Tests\Utils;
 
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
+use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Document;
 
 class DocumentHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,13 +44,19 @@ class DocumentHandlerTest extends \PHPUnit_Framework_TestCase
         ];
         
         $documentHandler = new DocumentHandler($data, $config);
-        $document = $documentHandler->createDocument();
         $result = [
           'name'=>'alain',
           'age'=>4,
           'sportsman'=>null,
         ];
-
-        $this->assertEquals($result, $document->getField());
+        $tags = ["tags" => [
+            "categories" => [
+                "include" => []
+            ]
+            ]];
+        $this->assertInstanceOf(Document::class, $documentHandler->createDocument());
+        $this->assertEquals($result, $documentHandler->createDocumentFields());
+        $this->assertEquals( $config, $documentHandler->getConfiguration());
+        $this->assertEquals( $tags, $documentHandler->getTagGenerator());
     }
 }

@@ -27,7 +27,12 @@ class SearchRequestHandler
     const HOST_NAME = 'escape_hither.search_manager.host';
     const INDEXES = 'escape_hither.search_manager.indexes';
     const FILTERS = 'filters';
-
+    const DATA = 'data';
+    const FACETS = 'facets';
+    const FACET_TAGS = 'facetTags';
+    const RANGE_DATE = 'range-date';
+    const RANGE_PRICE = 'range-price';
+    const RANGE = 'range';
 
     /**
      * @var RequestParameterHandler
@@ -44,6 +49,8 @@ class SearchRequestHandler
     private $indexName;
     private $host;
     private $tags;
+    private $filters = [];
+    private $searchRequest;
 
     /**
      * The request parameter handler constructor.
@@ -58,11 +65,13 @@ class SearchRequestHandler
         $this->host = $host;
         $this->requestParameterHandler->build();
         $this->request = $this->requestParameterHandler->getRequest();
+        // TODO remove give what we need directly
         $this->container = $this->requestParameterHandler->container;
         $this->indexConfig = $indexes[$this->requestParameterHandler->getIndexEntity()];
         $this->indexName = $this->indexConfig['index_name'];
         $this->resourceType = $this->indexConfig['type'];
-        $this->tags = $this->indexConfig['facets']['tags_relation'];
+        $this->tags = $this->indexConfig[self::FACETS]['tags_relation'];
+        $this->searchRequest = new SearchRequest();
     }
 
     /**
@@ -73,9 +82,8 @@ class SearchRequestHandler
     public function process()
     {
         $format = $this->requestParameterHandler->getFormat();
-        $searchRequest = new SearchRequest();
         $index = new Index($this->indexName, new EsClient($this->host));
-        $results = $index->search($searchRequest);
+        $results = $index->search($this->searchRequest);
     }
 
     /**
@@ -98,75 +106,17 @@ class SearchRequestHandler
      */
     public function search()
     {
-        $searchRequest = new SearchRequest();
-        $searchRequest->setType($this->resourceType);
+        $this->searchRequest->setType($this->resourceType);
         $facetProvider = new EsFacetProvider($this->indexConfig, $this->host);
-        $filters = [];
-        $page = 1;
 
-        if (!empty($this->request->query->get('page'))) {
-            $page = $this->request->query->get('page');
-        }
-
-        $parameter = $this->request->query->all();
-
-        if (!empty($parameter[self::FILTERS])) {
-            $facetDispatched = $facetProvider->dispatchFilter($parameter[self::FILTERS]);
-            empty($facetDispatched) ? :$searchRequest->addFilter('terms', $facetDispatched);
-            empty($parameter[self::FILTERS]['date']) ? :$searchRequest->addFilter('term', $parameter[self::FILTERS]['date']);
-            empty($parameter[self::FILTERS]['range-date']) ? :$searchRequest->addFilter('range', $parameter[self::FILTERS]['range-date']);
-            empty($parameter[self::FILTERS]['range-price']) ? :$searchRequest->addFilter('range', $parameter[self::FILTERS]['range-price']);
-            $filters = $parameter[self::FILTERS];
-        }
-
-        $aggs = [];
-
-        foreach ($this->indexConfig['facets']['tags_relation'] as $keyRelation => $relation) {
-            $aggs = [
-                $keyRelation => [
-                    'name' => $keyRelation,
-                    'size' => 1000, //TODO must be greater than Zero.
-                ],
-            ];
-        }
-
-        empty($aggs) ? :$searchRequest->addAggs($aggs);
-        $searchRequest->addAggs($aggs);
+        $this->initFilters();
+        $this->addAggregate();
 
         if ($this->requestParameterHandler->getString()) {
-            $searchRequest->setString($this->requestParameterHandler->getString());
+            $this->searchRequest->setString($this->requestParameterHandler->getString());
         }
 
-        $index = new Index($this->indexName, new EsClient($this->host));
-        $adapter = new EasyElasticSearchAdapter($searchRequest, $index);
-        $pagerFanta = new Pagerfanta($adapter);
-        $pagerFanta->setCurrentPage($page);
-        $pagerFanta->setMaxPerPage($this->requestParameterHandler->getPaginationSize());
-        $results = $pagerFanta->getCurrentPageResults();
-        $facets = $facetProvider->getFacets($results);
-        $facetTags = $facetProvider->getFacetsTag();
-
-        if ('html' === $this->requestParameterHandler->getFormat()) {
-            return  ['data' => $pagerFanta,
-                    'string' => $this->requestParameterHandler->getString(),
-                    'facets' => $facets,
-                    'facetTags' => $facetTags,
-                    self::FILTERS => $filters,
-                    'sort' => 'default',
-                    ];
-        }
-
-        $data['data'] = $results['hits']['hits'];
-        $data['pagination'] = [
-            'total' => $pagerFanta->count(),
-            'count' => count($data['data']),
-            'current_page' => $pagerFanta->getCurrentPage(),
-            'per_page' => $pagerFanta->getMaxPerPage(),
-            'total_pages' => $pagerFanta->getNbPages(),
-            'links' => $this->getLinks($pagerFanta, $this->request),
-        ];
-
-        return $data;
+        return $this->buildView();
     }
 
     /**
@@ -203,5 +153,84 @@ class SearchRequestHandler
         }
 
         return $this->links;
+    }
+
+    /**
+     * Init request filter.
+     *
+     * @return void
+     */
+    private function initFilters()
+    {
+        $parameter = $this->requestParameterHandler->getRequestParameter();
+
+        if (!empty($parameter[self::FILTERS])) {
+            $facetDispatched = $facetProvider->dispatchFilter($parameter[self::FILTERS]);
+            empty($facetDispatched) ? :$this->searchRequest->addFilter('terms', $facetDispatched);
+            empty($parameter[self::FILTERS]['date']) ? :$this->searchRequest->addFilter('term', $parameter[self::FILTERS]['date']);
+            empty($parameter[self::FILTERS][self::RANGE_DATE]) ? :$this->searchRequest->addFilter(self::RANGE, $parameter[self::FILTERS][self::RANGE_DATE]);
+            empty($parameter[self::FILTERS][self::RANGE_PRICE]) ? :$this->searchRequest->addFilter(self::RANGE, $parameter[self::FILTERS][self::RANGE_PRICE]);
+            $this->filters = $parameter[self::FILTERS];
+        }
+    }
+
+    /**
+     * Add aggregate
+     *
+     * @return void
+     */
+    private function addAggregate()
+    {
+        $aggs = [];
+
+        foreach ($this->indexConfig[self::FACETS]['tags_relation'] as $keyRelation => $relation) {
+            $aggs = [
+                $keyRelation => [
+                    'name' => $keyRelation,
+                    'size' => 1000, //TODO must be greater than Zero.
+                ],
+            ];
+        }
+        // TODo check witch one to leave
+        empty($aggs) ? :$this->searchRequest->addAggs($aggs);
+        $this->searchRequest->addAggs($aggs);
+    }
+    /**
+     * Build research view;
+     *
+     * @return void
+     */
+    private function buildView()
+    {
+        $index = new Index($this->indexName, new EsClient($this->host));
+        $adapter = new EasyElasticSearchAdapter($this->searchRequest, $index);
+        $pagerFanta = new Pagerfanta($adapter);
+        $pagerFanta->setCurrentPage($this->requestParameterHandler->getCurrentPage());
+        $pagerFanta->setMaxPerPage($this->requestParameterHandler->getPaginationSize());
+        $results = $pagerFanta->getCurrentPageResults();
+        $facets = $facetProvider->getFacets($results);
+        $facetTags = $facetProvider->getFacetsTag();
+
+        if ('html' === $this->requestParameterHandler->getFormat()) {
+            return  [self::DATA => $pagerFanta,
+                    'string' => $this->requestParameterHandler->getString(),
+                    self::FACETS => $facets,
+                    self::FACET_TAGS => $facetTags,
+                    self::FILTERS => $this->filters,
+                    'sort' => 'default',
+                   ];
+        }
+
+        $data[self::DATA] = $results['hits']['hits'];
+        $data['pagination'] = [
+            'total' => $pagerFanta->count(),
+            'count' => count($data[self::DATA]),
+            'current_page' => $pagerFanta->getCurrentPage(),
+            'per_page' => $pagerFanta->getMaxPerPage(),
+            'total_pages' => $pagerFanta->getNbPages(),
+            'links' => $this->getLinks($pagerFanta, $this->request),
+        ];
+
+        return $data;
     }
 }
