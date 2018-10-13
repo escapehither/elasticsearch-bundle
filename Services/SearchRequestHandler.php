@@ -51,6 +51,7 @@ class SearchRequestHandler
     private $tags;
     private $filters = [];
     private $searchRequest;
+    private $facetProvider;
 
     /**
      * The request parameter handler constructor.
@@ -72,6 +73,7 @@ class SearchRequestHandler
         $this->resourceType = $this->indexConfig['type'];
         $this->tags = $this->indexConfig[self::FACETS]['tags_relation'];
         $this->searchRequest = new SearchRequest();
+        $this->facetProvider = new EsFacetProvider($this->indexConfig, $this->host);
     }
 
     /**
@@ -107,8 +109,6 @@ class SearchRequestHandler
     public function search()
     {
         $this->searchRequest->setType($this->resourceType);
-        $facetProvider = new EsFacetProvider($this->indexConfig, $this->host);
-
         $this->initFilters();
         $this->addAggregate();
 
@@ -165,7 +165,7 @@ class SearchRequestHandler
         $parameter = $this->requestParameterHandler->getRequestParameter();
 
         if (!empty($parameter[self::FILTERS])) {
-            $facetDispatched = $facetProvider->dispatchFilter($parameter[self::FILTERS]);
+            $facetDispatched = $this->facetProvider->dispatchFilter($parameter[self::FILTERS]);
             empty($facetDispatched) ? :$this->searchRequest->addFilter('terms', $facetDispatched);
             empty($parameter[self::FILTERS]['date']) ? :$this->searchRequest->addFilter('term', $parameter[self::FILTERS]['date']);
             empty($parameter[self::FILTERS][self::RANGE_DATE]) ? :$this->searchRequest->addFilter(self::RANGE, $parameter[self::FILTERS][self::RANGE_DATE]);
@@ -208,8 +208,8 @@ class SearchRequestHandler
         $pagerFanta->setCurrentPage($this->requestParameterHandler->getCurrentPage());
         $pagerFanta->setMaxPerPage($this->requestParameterHandler->getPaginationSize());
         $results = $pagerFanta->getCurrentPageResults();
-        $facets = $facetProvider->getFacets($results);
-        $facetTags = $facetProvider->getFacetsTag();
+        $facets = $this->facetProvider->getFacets($results);
+        $facetTags = $this->facetProvider->getFacetsTag();
 
         if ('html' === $this->requestParameterHandler->getFormat()) {
             return  [self::DATA => $pagerFanta,
