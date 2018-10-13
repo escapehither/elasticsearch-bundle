@@ -44,7 +44,7 @@ class SearchRequest implements SearchReQuestInterface
      */
     public function setString($string)
     {
-        $this->request['body']['query']['bool']['must']['query_string']['query'] = $string.'*';
+        $this->request['body']['query']['bool']['must']['query_string']['query'] = $string;
         $this->request['body']['query']['bool']['must']['query_string']['fields'] = [
             '_all',
             '*.asciifolding',
