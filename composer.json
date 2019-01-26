@@ -4,12 +4,9 @@
     "require": {
         "php": ">=5.5.9",
         "doctrine/orm": "^2.5",
-        "doctrine/doctrine-bundle": "^1.6",
-        "doctrine/doctrine-cache-bundle": "^1.2",
+        "doctrine/doctrine-bundle": "~1.6",
+        "doctrine/doctrine-cache-bundle": "~1.2",
         "symfony/polyfill-apcu": "^1.0",
-        "sensio/distribution-bundle": "^5.0",
-        "stof/doctrine-extensions-bundle": "^1.2",
-        "doctrine/doctrine-migrations-bundle": "^1.2",
         "guzzlehttp/guzzle": "^6.2",
         "symfony/serializer": "~3.0|~4.0",
         "white-october/pagerfanta-bundle": "^1.0",
@@ -19,17 +16,8 @@
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^3.0",
-        "behat/symfony2-extension": "^2.1",
-        "behat/behat": "^3.3",
         "phpunit/phpunit": "^4.8.35 || ^5.7.11 || ^6.5",
         "phpunit/php-invoker":"~1.1",
-        "behat/mink": "^1.7",
-        "behat/mink-browserkit-driver": "^1.3",
-        "behat/mink-goutte-driver": "^1.2",
-        "behat/mink-selenium2-driver": "^1.3",
-        "behat/mink-zombie-driver": "^1.4",
-        "behat/mink-extension": "^2.2",
-        "behat/web-api-extension": "~1.0@dev",
         "escapestudios/symfony2-coding-standard": "~2.0"
     },
     "autoload": {
