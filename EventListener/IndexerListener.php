@@ -15,8 +15,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use EscapeHither\SearchManagerBundle\Utils\DocumentHandler;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\Index;
 use EscapeHither\SearchManagerBundle\Component\EasyElasticSearchPhp\EsClient;
-use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManager;
 use EscapeHither\SearchManagerBundle\Entity\IndexableEntityInterface;
 
 /**
@@ -31,17 +30,36 @@ class IndexerListener
     const FIELD_NAME = 'fieldName';
 
     /**
+     *
+     * @var EntityManager
+     */
+    private $em;
+
+    /**
+     * Es indexes configuration
+     *
+     * @var array
+     */
+    private $indexes;
+    /**
+     * Es host configuration.
+     *
+     * @var string.
+     */
+    private $host;
+
+    /**
      * Index Listener Constructor.
      *
-     * @param array           $indexes  The indexes
-     * @param string          $host     Es host.
-     * @param ManagerRegistry $doctrine Doctrine registry.
+     * @param array         $indexes     The indexes
+     * @param string        $host        Es host.
+     * @param EntityManager $em Doctrine registry.
      */
-    public function __construct($indexes, $host, ManagerRegistry $doctrine)
+    public function __construct($indexes, $host, EntityManager $em)
     {
         $this->indexes = $indexes;
         $this->host = $host;
-        $this->doctrine = $doctrine;
+        $this->em = $em;
     }
 
     /**
@@ -146,12 +164,11 @@ class IndexerListener
     protected function getEntityMetadataFieldMappings($entity)
     {
         // TODO ADD CASHING
-        $factory = new DisconnectedMetadataFactory($this->doctrine);
-        $metadataClass = $factory->getClassMetadata($entity)->getMetadata()[0];
+        $metadataClass = $this->em->getClassMetadata($entity);
         $baseMapping = $metadataClass->fieldMappings;
 
         foreach ($metadataClass->associationMappings as $fieldAssociation => $association) {
-            $metadataAssociation = $factory->getClassMetadata($association['targetEntity'])->getMetadata()[0];
+            $metadataAssociation = $this->em->getClassMetadata($association['targetEntity']);
             $mappingAssociation = $metadataAssociation->fieldMappings;
 
             foreach ($mappingAssociation as $keyMapping => $mapping) {

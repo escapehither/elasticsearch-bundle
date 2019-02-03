@@ -10,7 +10,7 @@ services:
 
     escapehither.doctrine_indexer_listener:
             class: '%escape_hither.indexer.class%'
-            arguments: ["%escape_hither.search_manager.indexes%", "%escape_hither.search_manager.host%", "@doctrine"]
+            arguments: ["%escape_hither.search_manager.indexes%", "%escape_hither.search_manager.host%", "@doctrine.orm.entity_manager"]
             tags:
                 - { name: doctrine.event_listener, event: postPersist }
                 - { name: doctrine.event_listener, event: postUpdate }
