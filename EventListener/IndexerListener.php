@@ -51,9 +51,9 @@ class IndexerListener
     /**
      * Index Listener Constructor.
      *
-     * @param array         $indexes     The indexes
-     * @param string        $host        Es host.
-     * @param EntityManager $em Doctrine registry.
+     * @param array         $indexes The indexes.
+     * @param string        $host    Es host.
+     * @param EntityManager $em      Doctrine registry.
      */
     public function __construct($indexes, $host, EntityManager $em)
     {
@@ -63,7 +63,7 @@ class IndexerListener
     }
 
     /**
-     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args
+     * @param LifecycleEventArgs $args
      */
     public function postPersist(LifecycleEventArgs $args)
     {
