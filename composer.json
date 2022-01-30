@@ -2,17 +2,15 @@
     "name": "escapehither/search-manager-bundle",
     "description": " This symfony bundle provide search and index features for symfony application",
     "require": {
-        "php": ">=5.5.9",
-        "doctrine/orm": "^2.5",
-        "doctrine/doctrine-bundle": "~1.6",
-        "doctrine/doctrine-cache-bundle": "~1.2",
+        "php": ">=7.2",
         "symfony/polyfill-apcu": "^1.0",
         "guzzlehttp/guzzle": "^6.2",
         "symfony/serializer": "~3.0|~4.0",
         "white-october/pagerfanta-bundle": "^1.0",
         "symfony/dependency-injection" : "~3.0|~4.0",
         "symfony/framework-bundle" : "~3.0|~4.0",
-        "elasticsearch/elasticsearch": "^5.2"
+        "elasticsearch/elasticsearch": "^5.2",
+        "symfony/orm-pack": "^2.2"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^3.0",
@@ -28,7 +26,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "master": "master",
+            "develop": "develop"
         }
     },
     "authors": [
